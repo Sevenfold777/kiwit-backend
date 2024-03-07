@@ -20,7 +20,7 @@ public class Content extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
 //    max length 설정하기
     @Column(nullable = false)
@@ -44,6 +44,10 @@ public class Content extends BaseEntity {
     @OneToMany(mappedBy = "content")
     @PrimaryKeyJoinColumn
     private List<ContentPayload> payloadList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "content")
+    @PrimaryKeyJoinColumn
+    private List<ContentStudied> contentStudiedList = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "category_chapter_id")

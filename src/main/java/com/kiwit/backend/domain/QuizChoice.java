@@ -1,17 +1,14 @@
 package com.kiwit.backend.domain;
 
+import com.kiwit.backend.domain.compositeKey.QuizChoiceId;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "quiz_choice")
 public class QuizChoice {
 
-    @Id
-    private Integer number;
-
-    @Id
-    @Column(name = "quiz_id")
-    private long quizId;
+    @EmbeddedId
+    private QuizChoiceId id;
 
     @Column(nullable = false)
     private String payload;

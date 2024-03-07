@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Builder
 public class UserInfo {
     @Id
@@ -21,6 +22,7 @@ public class UserInfo {
     @OneToOne
     @MapsId
     @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @ToString.Exclude
     private User user;
 
     private String jwtRefreshToken;

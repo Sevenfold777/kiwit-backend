@@ -18,7 +18,7 @@ public class LevelChapter {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
 //    unique = true? if needed (might be not necessary)
     @Column(nullable = false)

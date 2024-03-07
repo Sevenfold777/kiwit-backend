@@ -11,7 +11,7 @@ public class QuizGroup extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private String title;
@@ -19,7 +19,7 @@ public class QuizGroup extends BaseEntity {
     @Column(nullable = false)
     private String subtitle;
 
-//    @ManyToMany
-//    private List<Quiz> quizList = new ArrayList<>();
+    @OneToMany(mappedBy = "quizGroup")
+    private List<QuizGroupInvolved> quizGroupInvolvedList = new ArrayList<>();
 }
 

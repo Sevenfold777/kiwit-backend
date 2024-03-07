@@ -1,5 +1,6 @@
 package com.kiwit.backend.domain;
 
+import com.kiwit.backend.domain.compositeKey.ContentPayloadId;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,4 +1,4 @@
-package com.kiwit.backend.domain;
+package com.kiwit.backend.domain.compositeKey;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

@@ -1,11 +1,13 @@
 package com.kiwit.backend.service;
 
+import com.kiwit.backend.dto.*;
+
 public interface UserService {
 
-    void signUp();
-    void signIn();
-    void refreshToken();
-    void myInfo();
-    void editUser();
+    SignInResDTO signUp(SignUpReqDTO signUpReqDTO);
+    SignInResDTO signIn(SignInReqDTO signInReqDTO);
+    SignInResDTO refreshToken(RefreshTokenDTO refreshTokenDTO);
+    UserDTO myInfo();
+    UserDTO editUser(UserDTO userDTO);
     void withdrawUser();
 }

@@ -17,6 +17,6 @@ public class QuizGroupInvolved {
 
     @ManyToOne
     @MapsId("quizId")
-    @JoinColumn(name = "qui_id")
+    @JoinColumn(name = "quiz_id")
     private Quiz quiz;
 }

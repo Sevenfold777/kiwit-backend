@@ -21,9 +21,9 @@ public class UserRepositoryTest {
     public void createUserTest() {
 
         User user = new User();
-        user.setName("jaewon");
+        user.setNickname("jaewon");
         user.setEmail("jwonp98@naver.com");
-        user.setPassword("123");
+
 //        user.setPoint(0);
 //        user.setCurrent_level(0);
 

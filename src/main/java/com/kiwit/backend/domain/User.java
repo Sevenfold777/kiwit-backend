@@ -36,20 +36,23 @@ public class User extends BaseEntity implements UserDetails {
     private String email;
 
 //    if name == nickname => set "unique = true"
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    @ColumnDefault("0")
-    private Integer currentLevel;
+    @Column(nullable = false, unique = true)
+    private String nickname;
 
     @Column(nullable = false)
     @ColumnDefault("0")
     private Integer point;
 
+    @Column(nullable = false)
+//    @ColumnDefault("BASIC")
+    private String plan;
+
     @OneToOne(mappedBy = "user")
     @PrimaryKeyJoinColumn
     private UserInfo userInfo;
+
+    @OneToOne(mappedBy = "user")
+    private Progress progress;
 
     @OneToMany(mappedBy = "user")
     @PrimaryKeyJoinColumn
@@ -60,6 +63,12 @@ public class User extends BaseEntity implements UserDetails {
     @PrimaryKeyJoinColumn
     @ToString.Exclude
     private List<ContentStudied> contentStudiedList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<TrophyAwarded> trophyAwardedList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<QuizGroupSolved> quizGroupSolvedList = new ArrayList<>();
 
 
     @Override
@@ -74,7 +83,7 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.name;
+        return this.nickname;
     }
 
     @Override

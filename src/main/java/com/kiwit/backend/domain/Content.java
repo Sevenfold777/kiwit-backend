@@ -37,6 +37,12 @@ public class Content extends BaseEntity {
     @Column(nullable = false)
     private Integer orderCat;
 
+    @Column(nullable = false)
+    private String exercise;
+
+    @Column(nullable = false)
+    private Boolean answer;
+
     @ManyToOne
     @JoinColumn(name = "level_chapter_id")
     private LevelChapter levelChapter;
@@ -52,4 +58,7 @@ public class Content extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "category_chapter_id")
     private CategoryChapter categoryChapter;
+
+    @OneToMany(mappedBy = "content")
+    private List<Progress> progressList = new ArrayList<>();
 }

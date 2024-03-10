@@ -32,10 +32,10 @@ public class Content extends BaseEntity {
 
 //    auto-incrementing order_value would be better (check costs)
     @Column(nullable = false)
-    private Integer order_lv;
+    private Integer orderLv;
 
     @Column(nullable = false)
-    private Integer order_cat;
+    private Integer orderCat;
 
     @ManyToOne
     @JoinColumn(name = "level_chapter_id")

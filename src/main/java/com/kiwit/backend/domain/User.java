@@ -39,13 +39,9 @@ public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     private String name;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(nullable = false)
-    private String password;
-
     @Column(nullable = false)
     @ColumnDefault("0")
-    private Integer current_level;
+    private Integer currentLevel;
 
     @Column(nullable = false)
     @ColumnDefault("0")

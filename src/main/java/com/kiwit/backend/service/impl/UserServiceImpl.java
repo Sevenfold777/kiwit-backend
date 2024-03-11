@@ -1,6 +1,7 @@
 package com.kiwit.backend.service.impl;
 
 import com.kiwit.backend.dao.UserDAO;
+import com.kiwit.backend.domain.Trophy;
 import com.kiwit.backend.dto.*;
 import com.kiwit.backend.repository.UserRepository;
 import com.kiwit.backend.service.UserService;
@@ -54,5 +55,28 @@ public class UserServiceImpl implements UserService {
     @Override
     public void withdrawUser() {
         return;
+    }
+
+    @Override
+    public void signOut() {
+        return;
+    }
+
+    @Override
+    public TrophyDto getMyTrophyList() {
+        TrophyDto trophyDto = new TrophyDto();
+        return trophyDto;
+    }
+
+    @Override
+    public TrophyDto getMyTrophyLatest() {
+        TrophyDto trophyDto = new TrophyDto();
+        return trophyDto;
+    }
+
+    @Override
+    public StatDto getMyStat() {
+        StatDto statDto = new StatDto();
+        return statDto;
     }
 }

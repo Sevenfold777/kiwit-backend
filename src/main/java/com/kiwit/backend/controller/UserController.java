@@ -32,6 +32,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(signInResDTO);
     }
 
+    @Operation(summary = "sign out", description = "remove refresh token")
+    @PatchMapping(value = "/sign-out")
+    public ResponseEntity<Void> signOut(@RequestBody SignInReqDTO signInReqDTO) {
+        userService.signOut();
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
     @Operation(summary = "refresh jwt token", description = "refresh jwt access token & refresh token")
     @PatchMapping("/refresh")
     public ResponseEntity<SignInResDTO> refreshToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
@@ -42,7 +49,7 @@ public class UserController {
 
     @Operation(summary = "my info", description = "get my info")
     @GetMapping()
-    public ResponseEntity<UserDTO> myInfo() {
+    public ResponseEntity<UserDTO> getMyInfo() {
         UserDTO userDTO = userService.myInfo();
         return ResponseEntity.status(HttpStatus.OK).body(userDTO);
     }
@@ -59,6 +66,27 @@ public class UserController {
     public ResponseEntity<Void> withdrawUser() {
         userService.withdrawUser();
         return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @Operation(summary = "My trophy awarded list.", description = "my trophies")
+    @GetMapping("/trophy")
+    public ResponseEntity<TrophyDto> getMyTrophyList() {
+        TrophyDto resDTO = userService.getMyTrophyList();
+        return ResponseEntity.status(HttpStatus.OK).body(resDTO);
+    }
+
+    @Operation(summary = "My trophy awarded most recently.", description = "my latest trophy")
+    @GetMapping("/trophy/latest")
+    public ResponseEntity<TrophyDto> getMyTrophyLatest() {
+        TrophyDto resDTO = userService.getMyTrophyLatest();
+        return ResponseEntity.status(HttpStatus.OK).body(resDTO);
+    }
+
+    @Operation(summary = "User Stat", description = "my activity stat")
+    @GetMapping("/stat")
+    public ResponseEntity<StatDto> getMyStat() {
+        StatDto resDTO = userService.getMyStat();
+        return ResponseEntity.status(HttpStatus.OK).body(resDTO);
     }
 
 }

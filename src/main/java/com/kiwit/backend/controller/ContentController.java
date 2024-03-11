@@ -1,27 +1,41 @@
 package com.kiwit.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/api/v1/content")
 public class ContentController {
 
-    @Operation(summary = "Content with Payload", description = "content with joined payload")
-    @GetMapping("/{contentId}")
-    public void getContentPayload(@PathVariable Long contentId) {}
-
-    @Operation(summary = "Level list", description = "level list")
     @GetMapping("/level")
     public void getLevelList() {}
 
-    @Operation(summary = "Level Chapter list with Content",
-            description = "level Chapter list joined with Content (without payload)")
     @GetMapping("/level/{levelId}")
     public void getLevelChapterListWithContent(@PathVariable Long levelId) {}
+
+    @GetMapping("/{contentId}")
+    public void getContentPayload(@PathVariable Long contentId) {}
+
+    @PostMapping("/{contentId}")
+    public void studyContent(@PathVariable Long contentId) {}
+
+    @PatchMapping("/{contentId}/exercise")
+    public void submitExercise(@PathVariable Long contentId) {}
+
+    @GetMapping("/category")
+    public void getCategoryList() {}
+
+    @GetMapping("/category/{categoryId}")
+    public void getCategoryChapterWithContent() {}
+
+    @GetMapping("/progress")
+    public void getContentProgress() {}
+
+    @GetMapping("/kept")
+    public void getContentKept() {}
+
+    @GetMapping("/studied")
+    public void getContentStudied() {}
 
 
 }

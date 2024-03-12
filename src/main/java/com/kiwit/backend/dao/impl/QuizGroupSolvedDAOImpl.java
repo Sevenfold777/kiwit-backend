@@ -1,0 +1,17 @@
+package com.kiwit.backend.dao.impl;
+
+import com.kiwit.backend.dao.QuizGroupSolvedDAO;
+import com.kiwit.backend.repository.QuizGroupSolvedRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class QuizGroupSolvedDAOImpl implements QuizGroupSolvedDAO {
+
+    private final QuizGroupSolvedRepository quizGroupSolvedRepository;
+
+    @Autowired
+    public QuizGroupSolvedDAOImpl(QuizGroupSolvedRepository quizGroupSolvedRepository) {
+        this.quizGroupSolvedRepository = quizGroupSolvedRepository;
+    }
+}

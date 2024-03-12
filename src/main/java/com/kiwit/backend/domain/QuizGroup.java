@@ -24,13 +24,19 @@ public class QuizGroup extends BaseEntity {
     @Column(nullable = false)
     private String subtitle;
 
-    @Column(nullable = false)
-    private Integer difficulty;
 
     @OneToMany(mappedBy = "group")
     private List<Quiz> quizList = new ArrayList<>();
 
     @OneToMany(mappedBy = "quizGroup")
     private List<QuizGroupSolved> quizGroupSolvedList = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "level_num")
+    private Level level;
+
+    @ManyToOne
+    @JoinColumn(name = "category_chapter_id")
+    private CategoryChapter categoryChapter;
 }
 

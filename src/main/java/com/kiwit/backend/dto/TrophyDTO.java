@@ -1,4 +1,4 @@
 package com.kiwit.backend.dto;
 
-public class TrophyDto {
+public class TrophyDTO {
 }

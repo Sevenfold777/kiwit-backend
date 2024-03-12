@@ -13,22 +13,19 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 //@Builder
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "num")
 public class Level {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long num;
 
-    @Column(unique = true, nullable = false)
-    private Integer number;
-
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private String thumbnailUrl;
+    @Column
+    private String title;
 
     @OneToMany(mappedBy = "level")
-    private List<LevelChapter> chapterList = new ArrayList<>();
+    private List<Content> contentList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "level")
+    private List<QuizGroup> quizGroupList = new ArrayList<>();
 }

@@ -28,4 +28,7 @@ public class CategoryChapter {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @OneToMany(mappedBy = "categoryChapter")
+    private List<QuizGroup> quizGroupList = new ArrayList<>();
 }

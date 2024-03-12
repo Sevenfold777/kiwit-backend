@@ -30,13 +30,6 @@ public class Content extends BaseEntity {
     @ColumnDefault("0")
     private Integer point;
 
-//    auto-incrementing order_value would be better (check costs)
-    @Column(nullable = false)
-    private Integer orderLv;
-
-    @Column(nullable = false)
-    private Integer orderCat;
-
     @Column(nullable = false)
     private String exercise;
 
@@ -44,8 +37,8 @@ public class Content extends BaseEntity {
     private Boolean answer;
 
     @ManyToOne
-    @JoinColumn(name = "level_chapter_id")
-    private LevelChapter levelChapter;
+    @JoinColumn(name = "level_num")
+    private Level level;
 
     @OneToMany(mappedBy = "content")
     @PrimaryKeyJoinColumn

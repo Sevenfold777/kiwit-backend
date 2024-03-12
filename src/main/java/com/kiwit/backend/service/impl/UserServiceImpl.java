@@ -63,20 +63,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public TrophyDto getMyTrophyList() {
-        TrophyDto trophyDto = new TrophyDto();
+    public TrophyDTO getMyTrophyList() {
+        TrophyDTO trophyDto = new TrophyDTO();
         return trophyDto;
     }
 
     @Override
-    public TrophyDto getMyTrophyLatest() {
-        TrophyDto trophyDto = new TrophyDto();
+    public TrophyDTO getMyTrophyLatest() {
+        TrophyDTO trophyDto = new TrophyDTO();
         return trophyDto;
     }
 
     @Override
-    public StatDto getMyStat() {
-        StatDto statDto = new StatDto();
+    public StatDTO getMyStat() {
+        StatDTO statDto = new StatDTO();
         return statDto;
     }
 }

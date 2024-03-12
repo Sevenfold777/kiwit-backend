@@ -11,7 +11,7 @@ public interface UserService {
     UserDTO myInfo();
     UserDTO editUser(UserDTO userDTO);
     void withdrawUser();
-    TrophyDto getMyTrophyList();
-    TrophyDto getMyTrophyLatest();
-    StatDto getMyStat();
+    TrophyDTO getMyTrophyList();
+    TrophyDTO getMyTrophyLatest();
+    StatDTO getMyStat();
 }

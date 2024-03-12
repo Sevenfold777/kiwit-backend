@@ -47,6 +47,9 @@ public class User extends BaseEntity implements UserDetails {
 //    @ColumnDefault("BASIC")
     private String plan;
 
+    @Column(nullable = false)
+    private String status;
+
     @OneToOne(mappedBy = "user")
     @PrimaryKeyJoinColumn
     private UserInfo userInfo;

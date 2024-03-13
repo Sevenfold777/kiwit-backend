@@ -20,10 +20,8 @@ import java.util.stream.Collectors;
 @Table(name = "user")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString
-//@Builder
+@NoArgsConstructor
 @EqualsAndHashCode(of = "id", callSuper = true)
 @DynamicInsert
 public class User extends BaseEntity implements UserDetails {
@@ -35,7 +33,6 @@ public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
-//    if name == nickname => set "unique = true"
     @Column(nullable = false, unique = true)
     private String nickname;
 
@@ -44,10 +41,11 @@ public class User extends BaseEntity implements UserDetails {
     private Integer point;
 
     @Column(nullable = false)
-//    @ColumnDefault("BASIC")
+    @ColumnDefault("BASIC")
     private String plan;
 
     @Column(nullable = false)
+    @ColumnDefault("ACTIVE")
     private String status;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
@@ -114,5 +112,12 @@ public class User extends BaseEntity implements UserDetails {
         return false;
     }
 
+    public User(String email, String nickname) {
+        this.email = email;
+        this.nickname = nickname;
+    }
 
+    public User(Long id) {
+        this.id = id;
+    }
 }

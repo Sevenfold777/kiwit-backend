@@ -41,13 +41,16 @@ public class SecurityConfig {
 
 
         http.authorizeHttpRequests(authz -> authz
-//                .requestMatchers("/api/v1/user/refresh").permitAll()
-                .anyRequest().permitAll());
+                .requestMatchers("/api/v1/user/refresh",
+                        "/api/v1/user/sign-up",
+                        "/api/v1/user/sign-in").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .anyRequest().authenticated());
 
         return http.build();
     }
 //    @Bean
 //    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return web -> web.ignoring().requestMatchers();
+//        return web -> web.ignoring().requestMatchers("/swagger-ui/**");
 //    }
 }

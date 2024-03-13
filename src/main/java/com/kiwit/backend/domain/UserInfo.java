@@ -3,17 +3,18 @@ package com.kiwit.backend.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_info")
 @Getter
-@Setter
+//@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Builder
+@DynamicUpdate
 public class UserInfo {
     @Id
     @Column(name = "user_id")
@@ -32,4 +33,7 @@ public class UserInfo {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime latestVisit;
 
+    public void setJwtRefreshToken(String jwtRefreshToken) {
+        this.jwtRefreshToken = jwtRefreshToken;
+    }
 }

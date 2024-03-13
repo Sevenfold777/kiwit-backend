@@ -67,4 +67,8 @@ public class Content extends BaseEntity {
             return  null;
         }
     }
+
+    public Content(Long id) {
+        this.id = id;
+    }
 }

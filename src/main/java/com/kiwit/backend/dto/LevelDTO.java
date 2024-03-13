@@ -10,6 +10,5 @@ import lombok.Setter;
 public class LevelDTO {
 
     private Long num;
-
     private String title;
 }

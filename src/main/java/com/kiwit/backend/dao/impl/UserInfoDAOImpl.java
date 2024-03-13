@@ -6,6 +6,8 @@ import com.kiwit.backend.repository.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class UserInfoDAOImpl implements UserInfoDAO {
 
@@ -17,17 +19,26 @@ public class UserInfoDAOImpl implements UserInfoDAO {
     }
 
     @Override
+    public UserInfo findUserInfo(Long userId) {
+        Optional<UserInfo> savedUserInfo = userInfoRepository.findById(userId);
+        return savedUserInfo.get();
+    }
+
+    @Override
     public UserInfo insertUserInfo(UserInfo userInfo) {
-        return null;
+        UserInfo savedUserInfo = userInfoRepository.save(userInfo);
+        return savedUserInfo;
     }
 
     @Override
     public UserInfo updateUserInfo(UserInfo userInfo) {
-        return null;
+        UserInfo savedUserInfo = userInfoRepository.save(userInfo);
+        return savedUserInfo;
     }
 
     @Override
-    public UserInfo updateRefreshToken(Long userId, String refreshToken) {
-        return null;
+    public UserInfo updateRefreshToken(UserInfo userInfo) {
+        UserInfo savedUserInfo = userInfoRepository.save(userInfo);
+        return savedUserInfo;
     }
 }

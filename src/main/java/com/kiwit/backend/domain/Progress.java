@@ -19,10 +19,6 @@ public class Progress extends BaseEntity {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(nullable = false)
-//    @ColumnDefault("LEVEL")
-    private String criteria;
-
     @OneToOne
     @MapsId
     @JoinColumn(name = "user_id")
@@ -31,4 +27,8 @@ public class Progress extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "content_id")
     private Content content;
+
+    public Progress(User user) {
+        this.user = user;
+    }
 }

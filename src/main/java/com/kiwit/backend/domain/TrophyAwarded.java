@@ -15,12 +15,12 @@ public class TrophyAwarded extends BaseEntity {
     @EmbeddedId
     private TrophyAwardedId id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("userId")
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("trophyId")
     @JoinColumn(name = "trophy_id")
     private Trophy trophy;

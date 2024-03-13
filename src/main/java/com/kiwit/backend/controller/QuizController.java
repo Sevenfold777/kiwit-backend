@@ -1,10 +1,7 @@
 package com.kiwit.backend.controller;
 
 import com.kiwit.backend.domain.User;
-import com.kiwit.backend.dto.QuizGroupDTO;
-import com.kiwit.backend.dto.QuizGroupAnswersDTO;
-import com.kiwit.backend.dto.QuizGroupWithQuizDTO;
-import com.kiwit.backend.dto.QuizGroupWithSolvedDTO;
+import com.kiwit.backend.dto.*;
 import com.kiwit.backend.service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,25 +32,27 @@ public class QuizController {
     }
 
     @GetMapping("/group/{groupId}")
-    public ResponseEntity<List<QuizGroupWithQuizDTO>>
+    public ResponseEntity<QuizGroupWithQuizDTO>
     solveQuizGroup(@PathVariable Long groupId) {
-        List<QuizGroupWithQuizDTO> resDto = quizService.solveQuizGroup(groupId);
+        QuizGroupWithQuizDTO resDto = quizService.solveQuizGroup(groupId);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
     @PostMapping("/group/{groupId}")
-    public ResponseEntity<QuizGroupWithSolvedDTO>
-    submitAnswers(@PathVariable Long groupId,
-                  @RequestBody QuizGroupAnswersDTO quizGroupAnswersDTO) {
-        QuizGroupWithSolvedDTO resDto = quizService.submitAnswers(groupId, quizGroupAnswersDTO);
+    public ResponseEntity<QuizGroupSolvedDTO>
+    submitAnswers(@AuthenticationPrincipal User authUser,
+                  @PathVariable Long groupId,
+                  @RequestBody QuizAnswerListDTO quizAnswerListDTO) {
+        QuizGroupSolvedDTO resDto = quizService.submitAnswers(authUser.getId(), groupId, quizAnswerListDTO);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
     @PatchMapping("/group/{groupId}")
-    public ResponseEntity<QuizGroupWithSolvedDTO>
-    resubmitAnswers(@PathVariable Long groupId,
-                    @RequestBody QuizGroupAnswersDTO quizGroupAnswersDTO) {
-        QuizGroupWithSolvedDTO resDto = quizService.resubmitAnswers(groupId, quizGroupAnswersDTO);
+    public ResponseEntity<QuizGroupSolvedDTO>
+    resubmitAnswers(@AuthenticationPrincipal User authUser,
+                    @PathVariable Long groupId,
+                    @RequestBody QuizAnswerListDTO quizAnswerListDTO) {
+        QuizGroupSolvedDTO resDto = quizService.resubmitAnswers(authUser.getId(), groupId, quizAnswerListDTO);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
@@ -65,20 +64,28 @@ public class QuizController {
     }
 
     @GetMapping("/kept")
-    public ResponseEntity<List<QuizGroupWithSolvedDTO>>
+    public ResponseEntity<List<QuizWithSolvedDTO>>
     getQuizKept(@AuthenticationPrincipal User authUser,
                 @RequestParam Integer next,
                 @RequestParam Integer limit) {
-        List<QuizGroupWithSolvedDTO> resDto = quizService.getQuizKept(authUser, next, limit);
+        List<QuizWithSolvedDTO> resDto = quizService.getQuizKept(authUser, next, limit);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
     @GetMapping("/solved")
-    public ResponseEntity<List<QuizGroupWithSolvedDTO>>
+    public ResponseEntity<List<QuizWithSolvedDTO>>
     getQuizSolved(@AuthenticationPrincipal User authUser,
                   @RequestParam Integer next,
                   @RequestParam Integer limit) {
-        List<QuizGroupWithSolvedDTO> resDto = quizService.getQuizSolved(authUser, next, limit);
+        List<QuizWithSolvedDTO> resDto = quizService.getQuizSolved(authUser, next, limit);
+        return ResponseEntity.status(HttpStatus.OK).body(resDto);
+    }
+
+    @PatchMapping("/{quizId}/kept")
+    public ResponseEntity<QuizSolvedDTO>
+    keepContent(@AuthenticationPrincipal User authUser,
+                @PathVariable Long quizId) {
+        QuizSolvedDTO resDto = quizService.keepQuiz(authUser, quizId);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 

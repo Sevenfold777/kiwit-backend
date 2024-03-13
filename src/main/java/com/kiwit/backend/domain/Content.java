@@ -1,10 +1,7 @@
 package com.kiwit.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
@@ -13,7 +10,7 @@ import java.util.List;
 @Entity
 @Table(name = "content")
 @Getter
-@Setter
+//@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Content extends BaseEntity {
@@ -36,8 +33,9 @@ public class Content extends BaseEntity {
     @Column(nullable = false)
     private Boolean answer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "level_num")
+    @ToString.Exclude
     private Level level;
 
     @OneToMany(mappedBy = "content")
@@ -45,13 +43,28 @@ public class Content extends BaseEntity {
     private List<ContentPayload> payloadList = new ArrayList<>();
 
     @OneToMany(mappedBy = "content")
+    @ToString.Exclude
     @PrimaryKeyJoinColumn
     private List<ContentStudied> contentStudiedList = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_chapter_id")
+    @ToString.Exclude
     private CategoryChapter categoryChapter;
 
-    @OneToMany(mappedBy = "content")
-    private List<Progress> progressList = new ArrayList<>();
+    public Long getLevelNum() {
+        if (level != null) {
+            return level.getNum();
+        } else {
+            return  null;
+        }
+    }
+
+    public Long getCategoryChapterId() {
+        if (categoryChapter != null) {
+            return categoryChapter.getId();
+        } else {
+            return  null;
+        }
+    }
 }

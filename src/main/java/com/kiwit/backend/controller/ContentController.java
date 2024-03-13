@@ -1,18 +1,14 @@
 package com.kiwit.backend.controller;
 
-import com.kiwit.backend.domain.Level;
-import com.kiwit.backend.domain.Progress;
 import com.kiwit.backend.domain.User;
 import com.kiwit.backend.dto.*;
 import com.kiwit.backend.service.ContentService;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -48,26 +44,26 @@ public class ContentController {
     }
 
     @PostMapping("/{contentId}")
-    public ResponseEntity<ContentWithStudiedDTO>
+    public ResponseEntity<ContentStudiedDTO>
     studyContent(@AuthenticationPrincipal User authUser,
                  @PathVariable Long contentId) {
-        ContentWithStudiedDTO resDto = contentService.studyContent(authUser, contentId);
+        ContentStudiedDTO resDto = contentService.studyContent(authUser, contentId);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
     @PatchMapping("/{contentId}/exercise")
-    public ResponseEntity<ContentWithStudiedDTO>
+    public ResponseEntity<ContentStudiedDTO>
     submitExercise(@AuthenticationPrincipal User authUser,
                    @PathVariable Long contentId,
                    @RequestParam Boolean answer) {
-        ContentWithStudiedDTO resDto = contentService.submitExercise(authUser, contentId, answer);
+        ContentStudiedDTO resDto = contentService.submitExercise(authUser, contentId, answer);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
     @GetMapping("/category")
-    public ResponseEntity<CategoryDTO>
+    public ResponseEntity<List<CategoryDTO>>
     getCategoryList() {
-        CategoryDTO resDto = contentService.getCategoryList();
+        List<CategoryDTO> resDto = contentService.getCategoryList();
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
@@ -100,6 +96,14 @@ public class ContentController {
                       @RequestParam Integer next,
                       @RequestParam Integer limit) {
         List<ContentWithStudiedDTO> resDto = contentService.getContentStudied(authUser, next, limit);
+        return ResponseEntity.status(HttpStatus.OK).body(resDto);
+    }
+
+    @PatchMapping("/{contentId}/kept")
+    public ResponseEntity<ContentStudiedDTO>
+    keepContent(@AuthenticationPrincipal User authUser,
+                @PathVariable Long contentId) {
+        ContentStudiedDTO resDto = contentService.keepContent(authUser, contentId);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 

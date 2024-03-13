@@ -21,7 +21,7 @@ public class QuizChoice {
     @Column(nullable = false)
     private String payload;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("quizId")
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;

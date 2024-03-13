@@ -98,5 +98,4 @@ public class UserController {
         StatDTO resDTO = userService.getMyStat();
         return ResponseEntity.status(HttpStatus.OK).body(resDTO);
     }
-
 }

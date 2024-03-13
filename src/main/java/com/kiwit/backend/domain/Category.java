@@ -25,6 +25,4 @@ public class Category {
     @Column(nullable = false)
     private String thumbnailUrl;
 
-    @OneToMany(mappedBy = "category")
-    private List<CategoryChapter> chapterList = new ArrayList<>();
 }

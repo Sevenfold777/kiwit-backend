@@ -50,11 +50,11 @@ public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     private String status;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
     private UserInfo userInfo;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Progress progress;
 
     @OneToMany(mappedBy = "user")

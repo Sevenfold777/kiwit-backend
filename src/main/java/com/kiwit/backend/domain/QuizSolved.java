@@ -2,10 +2,7 @@ package com.kiwit.backend.domain;
 
 import com.kiwit.backend.domain.compositeKey.QuizSolvedId;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
@@ -14,6 +11,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class QuizSolved extends BaseEntity {
 
     @EmbeddedId
@@ -24,18 +22,18 @@ public class QuizSolved extends BaseEntity {
     private Boolean correct;
 
     @Column(nullable = false)
-    private String my_answer;
+    private String myAnswer;
 
     @Column(nullable = false)
     @ColumnDefault("false")
     private Boolean kept;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("userId")
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("quizId")
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;

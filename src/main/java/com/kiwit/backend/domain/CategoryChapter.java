@@ -25,7 +25,7 @@ public class CategoryChapter {
     @OneToMany(mappedBy = "categoryChapter")
     private List<Content> contentList = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 

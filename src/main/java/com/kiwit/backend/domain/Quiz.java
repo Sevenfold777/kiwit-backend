@@ -46,7 +46,7 @@ public class Quiz extends BaseEntity {
     @PrimaryKeyJoinColumn
     private List<QuizSolved> quizSolvedList = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
     private QuizGroup group;
 }

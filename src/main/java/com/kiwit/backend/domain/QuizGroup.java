@@ -31,12 +31,20 @@ public class QuizGroup extends BaseEntity {
     @OneToMany(mappedBy = "quizGroup")
     private List<QuizGroupSolved> quizGroupSolvedList = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "level_num")
     private Level level;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_chapter_id")
     private CategoryChapter categoryChapter;
+
+    public Long getLevelNum() {
+        if (level != null) {
+            return level.getNum();
+        } else {
+            return null;
+        }
+    }
 }
 

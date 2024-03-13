@@ -23,9 +23,9 @@ public class Level {
     @Column
     private String title;
 
-    @OneToMany(mappedBy = "level")
-    private List<Content> contentList = new ArrayList<>();
+//    @OneToMany(mappedBy = "level")
+//    private List<Content> contentList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "level")
-    private List<QuizGroup> quizGroupList = new ArrayList<>();
+//    @OneToMany(mappedBy = "level")
+//    private List<QuizGroup> quizGroupList = new ArrayList<>();
 }

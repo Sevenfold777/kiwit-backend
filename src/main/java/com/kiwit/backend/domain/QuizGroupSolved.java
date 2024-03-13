@@ -10,6 +10,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class QuizGroupSolved extends BaseEntity {
     
     @EmbeddedId
@@ -21,12 +22,12 @@ public class QuizGroupSolved extends BaseEntity {
     @Column(nullable = false)
     private Integer latestScore;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("userId")
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("quizGroupId")
     @JoinColumn(name = "quiz_group_id")
     private QuizGroup quizGroup;

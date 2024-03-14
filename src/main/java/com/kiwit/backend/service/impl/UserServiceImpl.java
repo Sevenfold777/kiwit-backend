@@ -2,6 +2,7 @@ package com.kiwit.backend.service.impl;
 
 import com.kiwit.backend.config.security.JwtTokenProvider;
 import com.kiwit.backend.dao.ProgressDAO;
+import com.kiwit.backend.dao.TrophyAwardedDAO;
 import com.kiwit.backend.dao.UserDAO;
 import com.kiwit.backend.dao.UserInfoDAO;
 import com.kiwit.backend.domain.*;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -20,34 +23,38 @@ public class UserServiceImpl implements UserService {
     UserDAO userDAO;
     UserInfoDAO userInfoDAO;
     ProgressDAO progressDAO;
+    TrophyAwardedDAO trophyAwardedDAO;
     JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     public UserServiceImpl(UserDAO userDAO,
                            UserInfoDAO userInfoDAO,
                            ProgressDAO progressDAO,
+                           TrophyAwardedDAO trophyAwardedDAO,
                            JwtTokenProvider jwtTokenProvider) {
         this.userDAO = userDAO;
         this.userInfoDAO = userInfoDAO;
         this.progressDAO = progressDAO;
+        this.trophyAwardedDAO = trophyAwardedDAO;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
     public SignInResDTO signUp(SignUpReqDTO signUpReqDTO) {
+        Long INIT_CONTENT = 1L;
 
         // set user with request body
         User user = new User(signUpReqDTO.getEmail(), signUpReqDTO.getNickname());
 
         // set progress with existing content id: 1 (initial content)
         Progress progress = new Progress(user);
-        progress.setContent(new Content(1L));
+        progress.setContent(new Content(INIT_CONTENT));
 
         // set user info
         UserInfo userInfo = UserInfo
                 .builder()
                 .user(user)
-                .latestVisit(LocalDateTime.now())
+                .provider(signUpReqDTO.getProvider())
                 .build();
 
         UserInfo savedUserInfo = userInfoDAO.insertUserInfo(userInfo);
@@ -74,15 +81,16 @@ public class UserServiceImpl implements UserService {
         // ...
 
         // 2. sign JWT access token, refresh token
-        // for test - sign in with id: 1
-        Long userId = 1L;
+        // for test - sign in with id: 16
+        Long userId = 16L;
 
         String accessToken = jwtTokenProvider.issueToken(userId, false);
         String refreshToken = jwtTokenProvider.issueToken(userId, true);
 
         // dirty checking
-        UserInfo userInfo = userInfoDAO.findUserInfo(userId);
-        userInfo.setJwtRefreshToken(refreshToken);
+        User user = userDAO.selectUserWithInfo(userId);
+        user.setStatus("ACTIVE");
+        user.getUserInfo().setJwtRefreshToken(refreshToken);
 
         SignInResDTO signInResDTO = new SignInResDTO(accessToken, refreshToken);
 
@@ -91,11 +99,9 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void signOut() {
-        Long userId = 1L;
-
+    public void signOut(User user) {
         // dirty checking
-        UserInfo userInfo = userInfoDAO.findUserInfo(userId);
+        UserInfo userInfo = userInfoDAO.findUserInfo(user.getId());
         userInfo.setJwtRefreshToken(null);
         return;
     }
@@ -126,36 +132,116 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO myInfo() {
-        UserDTO userDTO = new UserDTO();
+    public UserDTO myInfo(User user) {
+
+        User me = userDAO.selectUser(user.getId());
+
+        UserDTO userDTO = UserDTO
+                .builder()
+                .id(me.getId())
+                .email(me.getEmail())
+                .nickname(me.getNickname())
+                .plan(me.getPlan())
+                .status(me.getStatus())
+                .point(me.getPoint())
+                .build();
+
         return userDTO;
     }
 
+    @Transactional
     @Override
-    public UserDTO editUser(UserDTO userDTO) {
-        UserDTO resDTO = new UserDTO();
-        return resDTO;
+    public UserDTO editUser(User user, EditUserReqDTO userDTO) {
+        User me = userDAO.selectUser(user.getId());
+        me.setNickname(userDTO.getNickname());
+
+        UserDTO userResDTO = UserDTO
+                .builder()
+                .id(me.getId())
+                .email(me.getEmail())
+                .nickname(me.getNickname())
+                .plan(me.getPlan())
+                .status(me.getStatus())
+                .point(me.getPoint())
+                .build();
+
+        return userResDTO;
     }
 
+    @Transactional
     @Override
-    public void withdrawUser() {
+    public void withdrawUser(User user) {
+        User me = userDAO.selectUserWithInfo(user.getId());
+
+        // TODO: enum
+        me.setStatus("INACTIVE");
+        me.getUserInfo().setJwtRefreshToken(null);
         return;
     }
 
     @Override
-    public TrophyDTO getMyTrophyList() {
-        TrophyDTO trophyDto = new TrophyDTO();
-        return trophyDto;
+    public List<TrophyAwardedDTO> getMyTrophyList(User user) {
+
+        List<TrophyAwarded> trophyAwardedList
+                = trophyAwardedDAO.selectMyTrophyAwarded(user.getId());
+
+        List<TrophyAwardedDTO> trophyAwardedDTOList = new ArrayList<>();
+
+        for (TrophyAwarded ta : trophyAwardedList) {
+
+            Trophy trophy = ta.getTrophy();
+
+            TrophyDTO trophyDTO = TrophyDTO
+                    .builder()
+                    .id(trophy.getId())
+                    .title(trophy.getTitle())
+                    .imageUrl(trophy.getImageUrl())
+                    .build();
+
+            TrophyAwardedDTO trophyAwardedDTO
+                    = TrophyAwardedDTO
+                    .builder()
+                    .userId(ta.getId().getUserId())
+                    .trophy(trophyDTO)
+                    .createdAt(ta.getCreatedAt())
+                    .updatedAt(ta.getUpdatedAt())
+                    .build();
+
+            trophyAwardedDTOList.add(trophyAwardedDTO);
+        }
+
+
+        return trophyAwardedDTOList;
     }
 
     @Override
-    public TrophyDTO getMyTrophyLatest() {
-        TrophyDTO trophyDto = new TrophyDTO();
-        return trophyDto;
+    public TrophyAwardedDTO getMyTrophyLatest(User user) {
+
+        TrophyAwarded trophyAwarded
+                = trophyAwardedDAO.selectTrophyAwardedLatest(user.getId());
+
+        Trophy trophy = trophyAwarded.getTrophy();
+
+        TrophyDTO trophyDTO = TrophyDTO
+                .builder()
+                .id(trophy.getId())
+                .title(trophy.getTitle())
+                .imageUrl(trophy.getImageUrl())
+                .build();
+
+        TrophyAwardedDTO trophyAwardedDTO = TrophyAwardedDTO
+                .builder()
+                .userId(trophyAwarded.getId().getUserId())
+                .trophy(trophyDTO)
+                .createdAt(trophyAwarded.getCreatedAt())
+                .updatedAt(trophyAwarded.getUpdatedAt())
+                .build();
+
+        return trophyAwardedDTO;
     }
 
     @Override
-    public StatDTO getMyStat() {
+    public StatDTO getMyStat(User user) {
         StatDTO statDto = new StatDTO();
         return statDto;
     }

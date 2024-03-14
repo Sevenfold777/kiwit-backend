@@ -13,22 +13,22 @@ import java.util.Arrays;
 @Configuration
 public class SwaggerConfig {
 
-    private SecurityScheme createAPIKeyScheme() {
-        return new SecurityScheme().type(SecurityScheme.Type.HTTP)
-                .bearerFormat("JWT")
-                .scheme("bearer");
-    }
-
     @Bean
     public OpenAPI openAPI() {
-        return new OpenAPI().addSecurityItem(new SecurityRequirement().
-                        addList("Bearer Authentication"))
-                .components(new Components().addSecuritySchemes
-                        ("Bearer Authentication", createAPIKeyScheme()))
-                .info(new Info().title("My REST API")
-                        .description("Some custom description of API.")
-                        .version("1.0"));
+        String securityJWTName = "JWT";
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(securityJWTName);
+        Components components = new Components()
+                .addSecuritySchemes(securityJWTName, new SecurityScheme()
+                        .name(securityJWTName)
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("Bearer")
+                        .bearerFormat(securityJWTName));
+
+        return new OpenAPI()
+                .addSecurityItem(securityRequirement)
+                .components(components);
 
     }
+
 
 }

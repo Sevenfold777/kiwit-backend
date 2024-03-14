@@ -5,4 +5,6 @@ import com.kiwit.backend.domain.Progress;
 public interface ProgressDAO {
 
     Progress insertProgress(Progress progress);
+
+    Progress selectProgressWithUser(Long userId);
 }

@@ -24,6 +24,8 @@ public class QuizGroup extends BaseEntity {
     @Column(nullable = false)
     private String subtitle;
 
+    @Column(nullable = false)
+    private Integer totalScore;
 
     @OneToMany(mappedBy = "group")
     private List<Quiz> quizList = new ArrayList<>();
@@ -45,6 +47,10 @@ public class QuizGroup extends BaseEntity {
         } else {
             return null;
         }
+    }
+
+    public QuizGroup(Long id) {
+        this.id = id;
     }
 }
 

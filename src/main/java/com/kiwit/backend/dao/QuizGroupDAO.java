@@ -10,4 +10,6 @@ public interface QuizGroupDAO {
 
     QuizGroup selectGroupWithQuiz(Long groupId);
 
+    QuizGroup selectGroup(Long groupId);
+
 }

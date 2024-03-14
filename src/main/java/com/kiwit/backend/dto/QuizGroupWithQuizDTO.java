@@ -13,6 +13,7 @@ public class QuizGroupWithQuizDTO {
     private Long id;
     private String title;
     private String subtitle;
-
+    private Long levelNum;
+    private Integer totalScore;
     private List<QuizDTO> quizList;
 }

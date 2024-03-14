@@ -22,12 +22,12 @@ public class QuizGroupSolved extends BaseEntity {
     @Column(nullable = false)
     private Integer latestScore;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId("userId")
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId("quizGroupId")
     @JoinColumn(name = "quiz_group_id")
     private QuizGroup quizGroup;

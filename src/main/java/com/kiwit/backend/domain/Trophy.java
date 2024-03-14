@@ -23,7 +23,4 @@ public class Trophy extends BaseEntity {
 
     @Column
     private String imageUrl;
-
-    @OneToMany(mappedBy = "trophy")
-    private List<TrophyAwarded> trophyAwardedList = new ArrayList<>();
 }

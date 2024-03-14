@@ -6,6 +6,8 @@ import com.kiwit.backend.repository.ProgressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class ProgressDAOImpl implements ProgressDAO {
 
@@ -20,5 +22,11 @@ public class ProgressDAOImpl implements ProgressDAO {
     public Progress insertProgress(Progress progress) {
         Progress savedProgress = progressRepository.save(progress);
         return savedProgress;
+    }
+
+    @Override
+    public Progress selectProgressWithUser(Long userId) {
+        Optional<Progress> progress = progressRepository.findProgressByUserId(userId);
+        return progress.get();
     }
 }

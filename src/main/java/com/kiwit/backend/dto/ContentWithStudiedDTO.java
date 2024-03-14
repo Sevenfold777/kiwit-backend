@@ -6,6 +6,7 @@ import com.kiwit.backend.domain.Level;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -19,5 +20,5 @@ public class ContentWithStudiedDTO {
     private Boolean answer;
     private Long levelNum;
     private Long categoryChapterId;
-    private List<ContentStudiedDTO> contentStudiedList;
+    private ContentStudiedDTO contentStudied;
 }

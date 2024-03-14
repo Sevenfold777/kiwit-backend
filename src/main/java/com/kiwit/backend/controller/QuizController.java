@@ -43,7 +43,7 @@ public class QuizController {
     submitAnswers(@AuthenticationPrincipal User authUser,
                   @PathVariable Long groupId,
                   @RequestBody QuizAnswerListDTO quizAnswerListDTO) {
-        QuizGroupSolvedDTO resDto = quizService.submitAnswers(authUser.getId(), groupId, quizAnswerListDTO);
+        QuizGroupSolvedDTO resDto = quizService.submitAnswers(authUser, groupId, quizAnswerListDTO);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
@@ -52,7 +52,7 @@ public class QuizController {
     resubmitAnswers(@AuthenticationPrincipal User authUser,
                     @PathVariable Long groupId,
                     @RequestBody QuizAnswerListDTO quizAnswerListDTO) {
-        QuizGroupSolvedDTO resDto = quizService.resubmitAnswers(authUser.getId(), groupId, quizAnswerListDTO);
+        QuizGroupSolvedDTO resDto = quizService.resubmitAnswers(authUser, groupId, quizAnswerListDTO);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
@@ -72,12 +72,12 @@ public class QuizController {
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
-    @GetMapping("/solved")
-    public ResponseEntity<List<QuizWithSolvedDTO>>
+    @GetMapping("/group/solved")
+    public ResponseEntity<List<QuizGroupWithSolvedDTO>>
     getQuizSolved(@AuthenticationPrincipal User authUser,
                   @RequestParam Integer next,
                   @RequestParam Integer limit) {
-        List<QuizWithSolvedDTO> resDto = quizService.getQuizSolved(authUser, next, limit);
+        List<QuizGroupWithSolvedDTO> resDto = quizService.getQuizGroupSolved(authUser, next, limit);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 

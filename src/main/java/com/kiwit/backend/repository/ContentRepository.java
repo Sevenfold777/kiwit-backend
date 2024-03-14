@@ -22,20 +22,14 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
             "where C.id = :contentId")
     Optional<Content> findContentWithPayload(@Param("contentId") Long contentId);
 
-    @Query("select C " +
-            "from Content C " +
-            "join fetch C.contentStudiedList " +
-            "where element(C.contentStudiedList).id.userId = :userId " +
-            "and element(C.contentStudiedList).kept = true")
-    List<Content> findContentKept(@Param("userId") Long userId);
 
     @Query("select C " +
             "from Content C " +
-            "join C.contentStudiedList " +
-            "where element(C.contentStudiedList).id.userId = :userId")
-    List<Content> findContentStudied(@Param("userId") Long userId);
-
-    @Query("select C " +
-            "from Content C")
-    Content findByProgressUserId(@Param("userId") Long userId);
+            "where C.id > " +
+            "(select P.content.id " +
+            "from Progress P " +
+            "where P.id = :userId) " +
+            "order by C.id asc " +
+            "limit 1")
+    Optional<Content> findNextContent(@Param("userId") Long userId);
 }

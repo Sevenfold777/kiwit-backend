@@ -9,6 +9,7 @@ import com.kiwit.backend.domain.compositeKey.QuizGroupSolvedId;
 import com.kiwit.backend.domain.compositeKey.QuizSolvedId;
 import com.kiwit.backend.dto.*;
 import com.kiwit.backend.service.QuizService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,6 +59,7 @@ public class QuizServiceImpl implements QuizService {
                     .title(g.getTitle())
                     .subtitle(g.getSubtitle())
                     .levelNum(g.getLevelNum())
+                    .totalScore(g.getTotalScore())
                     .categoryChapter(chapterDTO)
                     .build();
 
@@ -66,6 +68,8 @@ public class QuizServiceImpl implements QuizService {
 
         return quizGroupListDTO;
     }
+
+    @Transactional
     @Override
     public QuizGroupWithQuizDTO solveQuizGroup(Long groupId) {
         QuizGroup quizGroup = quizGroupDAO.selectGroupWithQuiz(groupId);
@@ -113,18 +117,25 @@ public class QuizServiceImpl implements QuizService {
                 .id(quizGroup.getId())
                 .title(quizGroup.getTitle())
                 .subtitle(quizGroup.getSubtitle())
+                .totalScore(quizGroup.getTotalScore())
                 .quizList(quizDTOList)
                 .build();
 
 
         return quizGroupDTO;
     }
+
+    @Transactional
     @Override
-    public QuizGroupSolvedDTO submitAnswers(Long userId, Long groupId, QuizAnswerListDTO quizAnswerListDTO) {
+    public QuizGroupSolvedDTO submitAnswers(User user, Long groupId, QuizAnswerListDTO quizAnswerListDTO) {
+        // TODO
+        // if call this function for already solved problem,
+        // even not answer changed
+        // update query fires...
 
         QuizGroup quizGroup = quizGroupDAO.selectGroupWithQuiz(groupId);
 
-        Integer totalScore = 0;
+        Integer scoreGot = 0;
         List<QuizSolved> quizSolvedList = new ArrayList<>();
 
         // 1. iterate dto and create entity. check user answers
@@ -139,7 +150,7 @@ public class QuizServiceImpl implements QuizService {
             if (quiz.isPresent()) {
                 correct = answer.getAnswer().equals(quiz.get().getAnswer());
                 if (correct) {
-                    totalScore += quiz.get().getScore();
+                    scoreGot += quiz.get().getScore();
                 }
             } else {
                 // throw exception
@@ -148,10 +159,12 @@ public class QuizServiceImpl implements QuizService {
 
             QuizSolved solved = QuizSolved
                     .builder()
-                    .id(new QuizSolvedId(userId, groupId))
+                    .id(new QuizSolvedId(user.getId(), answer.getQuizId()))
+                    .user(new User(user.getId()))
+                    .quiz(new Quiz(answer.getQuizId()))
                     .myAnswer(answer.getAnswer())
                     .correct(correct)
-                    .kept(false) // default 확인하기
+                    .kept(false) // column default 확인하기
                     .build();
 
             quizSolvedList.add(solved);
@@ -163,9 +176,11 @@ public class QuizServiceImpl implements QuizService {
         QuizGroupSolved quizGroupSolved
                 = QuizGroupSolved
                 .builder()
-                .id(new QuizGroupSolvedId(userId, groupId))
-                .highestScore(totalScore)
-                .latestScore(totalScore)
+                .id(new QuizGroupSolvedId(user.getId(), groupId))
+                .user(new User(user.getId()))
+                .quizGroup(new QuizGroup(groupId))
+                .highestScore(scoreGot)
+                .latestScore(scoreGot)
                 .build();
 
         // 3. save group solved result with calculated scores
@@ -183,73 +198,148 @@ public class QuizServiceImpl implements QuizService {
 
         return quizGroupSolvedDTO;
     }
+
+    @Transactional
     @Override
-    public QuizGroupSolvedDTO resubmitAnswers(Long userId, Long groupId, QuizAnswerListDTO quizAnswerListDTO) {
+    public QuizGroupSolvedDTO resubmitAnswers(User user, Long groupId, QuizAnswerListDTO quizAnswerListDTO) {
 
-        // iterate dto and create entity. check user answers
+        // 1. get quiz solved with quiz (corresponding group)
+        List<QuizSolved> quizSolvedList = quizSolvedDAO.selectQuizSolvedWithQuizByGroup(user.getId(), groupId);
+        QuizGroupSolved quizGroupSolved = quizGroupSolvedDAO.selectGroupSolvedWithGroup(user.getId(), groupId);
 
-        // save result of quiz group
+        Integer scoreGot = 0;
 
-        return null;
+        for (QuizSolved s : quizSolvedList) {
+
+            Boolean correct = false;
+
+            // 2. check answer
+            Optional<QuizAnswerDTO> answerDTO = quizAnswerListDTO.getAnswerList().stream()
+                                .filter(a -> a.getQuizId().equals(s.getId().getQuizId())).findAny();
+
+            String answerNew = answerDTO.get().getAnswer();
+
+            // check correct and add score
+            if (answerDTO.isPresent()) {
+                correct = answerNew.equals(s.getQuiz().getAnswer());
+                if (correct) {
+                    scoreGot += s.getQuiz().getScore();
+                }
+            } else {
+                // throw exception
+                return null;
+            }
+
+            // 3. update quiz solved
+            s.setMyAnswer(answerNew);
+            s.setCorrect(correct);
+
+        }
+
+        // 4. update quiz group solved scores
+        quizGroupSolved.setLatestScore(scoreGot);
+        if (quizGroupSolved.getHighestScore() < scoreGot) {
+            quizGroupSolved.setHighestScore(scoreGot);
+        }
+
+        // 4. Generate Response DTO
+        QuizGroupSolvedDTO quizGroupSolvedDTO
+                = QuizGroupSolvedDTO
+                .builder()
+                .userId(quizGroupSolved.getId().getUserId())
+                .quizGroupId(quizGroupSolved.getId().getQuizGroupId())
+                .highestScore(quizGroupSolved.getHighestScore())
+                .latestScore(quizGroupSolved.getLatestScore())
+                .build();
+
+        return quizGroupSolvedDTO;
     }
 
     @Override
     public QuizGroupWithSolvedDTO getQuizGroupLatestSolved(User authUser) {
         QuizGroupSolved quizGroupSolved = quizGroupSolvedDAO.selectGroupLatestSolved(authUser.getId());
 
+        QuizGroupSolvedDTO quizGroupSolvedDTO
+                = QuizGroupSolvedDTO
+                .builder()
+                .userId(quizGroupSolved.getId().getUserId())
+                .quizGroupId(quizGroupSolved.getId().getQuizGroupId())
+                .latestScore(quizGroupSolved.getLatestScore())
+                .highestScore(quizGroupSolved.getHighestScore())
+                .build();
+
         QuizGroupWithSolvedDTO quizGroupWithSolvedDTO
                 = QuizGroupWithSolvedDTO
                 .builder()
-                .id(quizGroupSolved.getQuizGroup().getId())
+                .id(quizGroupSolved.getId().getQuizGroupId())
                 .title(quizGroupSolved.getQuizGroup().getTitle())
                 .subtitle(quizGroupSolved.getQuizGroup().getSubtitle())
-//                .result(quizGroupSolved.getUser().getQuizGroupSolvedList().get(0))
+                .result(quizGroupSolvedDTO)
                 .build();
 
         return quizGroupWithSolvedDTO;
     }
     @Override
+    public List<QuizGroupWithSolvedDTO> getQuizGroupSolved(User authUser, Integer next, Integer limit) {
+
+        List<QuizGroupSolved> quizGroupSolvedList = quizGroupSolvedDAO.selectGroupSolved(authUser.getId());
+
+        List<QuizGroupWithSolvedDTO> quizGroupWithSolvedDTOList = new ArrayList<>();
+        for (QuizGroupSolved g : quizGroupSolvedList) {
+
+            QuizGroupSolvedDTO quizGroupSolvedDTO
+                    = QuizGroupSolvedDTO
+                    .builder()
+                    .userId(g.getId().getUserId())
+                    .quizGroupId(g.getId().getQuizGroupId())
+                    .latestScore(g.getLatestScore())
+                    .highestScore(g.getHighestScore())
+                    .build();
+
+            QuizGroupWithSolvedDTO quizGroupWithSolvedDTO
+                    = QuizGroupWithSolvedDTO
+                    .builder()
+                    .id(g.getId().getQuizGroupId())
+                    .title(g.getQuizGroup().getTitle())
+                    .subtitle(g.getQuizGroup().getSubtitle())
+                    .totalScore(g.getQuizGroup().getTotalScore())
+                    .result(quizGroupSolvedDTO)
+                    .build();
+
+            quizGroupWithSolvedDTOList.add(quizGroupWithSolvedDTO);
+        }
+
+        return quizGroupWithSolvedDTOList;
+    }
+
+    @Override
     public List<QuizWithSolvedDTO> getQuizKept(User authUser, Integer next, Integer limit) {
         List<QuizSolved> quizSolvedList = quizSolvedDAO.selectQuizKept(authUser.getId());
 
         List<QuizWithSolvedDTO> quizSolvedListDTO = new ArrayList<>();
-        for (QuizSolved g : quizSolvedList) {
-            QuizWithSolvedDTO quizDTO
-                    = QuizWithSolvedDTO
+        for (QuizSolved q : quizSolvedList) {
+
+            QuizSolvedDTO quizSolvedDTO
+                    = QuizSolvedDTO
                     .builder()
-                    .id(g.getQuiz().getId())
-                    .type(g.getQuiz().getType())
-                    .title(g.getQuiz().getTitle())
-                    .question(g.getQuiz().getQuestion())
-                    .answer(g.getQuiz().getAnswer())
-                    .explanation(g.getQuiz().getExplanation())
-                    .score(g.getQuiz().getScore())
-//                    .result
+                    .userId(q.getId().getUserId())
+                    .quizId(q.getId().getQuizId())
+                    .correct(q.getCorrect())
+                    .myAnswer(q.getMyAnswer())
+                    .kept(q.getKept())
                     .build();
 
-            quizSolvedListDTO.add(quizDTO);
-        }
-
-        return quizSolvedListDTO;
-    }
-    @Override
-    public List<QuizWithSolvedDTO> getQuizSolved(User authUser, Integer next, Integer limit) {
-
-        List<QuizSolved> quizSolvedList = quizSolvedDAO.selectQuizSolved(authUser.getId());
-
-        List<QuizWithSolvedDTO> quizSolvedListDTO = new ArrayList<>();
-        for (QuizSolved g : quizSolvedList) {
             QuizWithSolvedDTO quizDTO
                     = QuizWithSolvedDTO
                     .builder()
-                    .id(g.getQuiz().getId())
-                    .type(g.getQuiz().getType())
-                    .title(g.getQuiz().getTitle())
-                    .question(g.getQuiz().getQuestion())
-                    .answer(g.getQuiz().getAnswer())
-                    .explanation(g.getQuiz().getExplanation())
-                    .score(g.getQuiz().getScore())
-//                    .result
+                    .id(q.getQuiz().getId())
+                    .type(q.getQuiz().getType())
+                    .title(q.getQuiz().getTitle())
+                    .question(q.getQuiz().getQuestion())
+                    .answer(q.getQuiz().getAnswer())
+                    .explanation(q.getQuiz().getExplanation())
+                    .score(q.getQuiz().getScore())
+                    .result(quizSolvedDTO)
                     .build();
 
             quizSolvedListDTO.add(quizDTO);

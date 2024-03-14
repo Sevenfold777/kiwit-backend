@@ -49,4 +49,8 @@ public class Quiz extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
     private QuizGroup group;
+
+    public Quiz(Long id) {
+        this.id = id;
+    }
 }

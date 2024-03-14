@@ -2,16 +2,21 @@ package com.kiwit.backend.domain;
 
 import com.kiwit.backend.domain.compositeKey.ContentStudiedId;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.data.domain.Persistable;
 
 @Entity
 @Table(name = "content_studied")
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@DynamicInsert
+@DynamicUpdate
 public class ContentStudied extends BaseEntity {
 
     @EmbeddedId
@@ -25,13 +30,14 @@ public class ContentStudied extends BaseEntity {
     private Boolean kept;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId("userId")
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId("contentId")
     @JoinColumn(name = "content_id")
     private Content content;
+
 }

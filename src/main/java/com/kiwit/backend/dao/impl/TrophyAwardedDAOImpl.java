@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class TrophyAwardedDAOImpl implements TrophyAwardedDAO {
@@ -19,11 +20,13 @@ public class TrophyAwardedDAOImpl implements TrophyAwardedDAO {
 
     @Override
     public List<TrophyAwarded> selectMyTrophyAwarded(Long userId) {
-        return null;
+        List<TrophyAwarded> trophyAwardedList = trophyAwardedRepository.findTrophyAwarded(userId);
+        return trophyAwardedList;
     }
 
     @Override
     public TrophyAwarded selectTrophyAwardedLatest(Long userId) {
-        return null;
+        Optional<TrophyAwarded> trophyAwarded = trophyAwardedRepository.findTrophyAwardedLatest(userId);
+        return trophyAwarded.get();
     }
 }

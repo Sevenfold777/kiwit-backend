@@ -15,4 +15,6 @@ public interface QuizSolvedDAO {
     List<QuizSolved> selectQuizKept(Long userId);
 
     List<QuizSolved> selectQuizSolved(Long userId);
+
+    List<QuizSolved> selectQuizSolvedWithQuizByGroup(Long userId, Long groupId);
 }

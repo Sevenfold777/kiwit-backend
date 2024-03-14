@@ -7,12 +7,10 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class ContentStudiedDTO {
+public class TrophyAwardedDTO {
 
     private Long userId;
-    private Long contentId;
-    private Boolean myAnswer;
-    private Boolean kept;
+    private TrophyDTO trophy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

@@ -14,5 +14,5 @@ public class QuizWithSolvedDTO {
     private String answer;
     private String explanation;
     private Integer score;
-    private QuizSolved result;
+    private QuizSolvedDTO result;
 }

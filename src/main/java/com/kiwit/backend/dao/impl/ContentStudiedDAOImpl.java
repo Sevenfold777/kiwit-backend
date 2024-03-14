@@ -5,10 +5,12 @@ import com.kiwit.backend.domain.Content;
 import com.kiwit.backend.domain.ContentStudied;
 import com.kiwit.backend.domain.compositeKey.ContentStudiedId;
 import com.kiwit.backend.repository.ContentStudiedRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -28,44 +30,37 @@ public class ContentStudiedDAOImpl implements ContentStudiedDAO {
         return savedStudy;
     }
 
+    @Transactional
     @Override
     public ContentStudied updateContentStudied(Long userId, Long contentId, Boolean answer) {
 
         Optional<ContentStudied> tgtStudy = contentStudiedRepository.findById(new ContentStudiedId(userId, contentId));
+        // exception handling needed
+        tgtStudy.get().setMyAnswer(answer);
 
-
-        ContentStudied updatedStudy;
-        if (tgtStudy.isPresent()) {
-            ContentStudied study = tgtStudy.get();
-
-            study.setMyAnswer(answer);
-
-            updatedStudy = contentStudiedRepository.save(study);
-        } else {
-            return  null;
-//            throw new Exception();
-        }
-
-        return updatedStudy;
+        return tgtStudy.get();
     }
 
+    @Transactional
     @Override
     public ContentStudied keepContent(Long userId, Long contentId) {
         Optional<ContentStudied> tgtStudy = contentStudiedRepository.findById(new ContentStudiedId(userId, contentId));
 
+        ContentStudied study = tgtStudy.get();
+        study.setKept(!tgtStudy.get().getKept());
 
-        ContentStudied updatedStudy;
-        if (tgtStudy.isPresent()) {
-            ContentStudied study = tgtStudy.get();
+        return study;
+    }
 
-            study.setKept(!tgtStudy.get().getKept());
+    @Override
+    public List<ContentStudied> selectContentListKept(Long userId, Integer next, Integer limit) {
+        List<ContentStudied> contentStudiedList = contentStudiedRepository.findContentKept(userId);
+        return contentStudiedList;
+    }
 
-            updatedStudy = contentStudiedRepository.save(study);
-        } else {
-            return  null;
-//            throw new Exception();
-        }
-
-        return updatedStudy;
+    @Override
+    public List<ContentStudied> selectContentListStudied(Long userId, Integer next, Integer limit) {
+        List<ContentStudied> contentStudiedList = contentStudiedRepository.findContentStudied(userId);
+        return contentStudiedList;
     }
 }

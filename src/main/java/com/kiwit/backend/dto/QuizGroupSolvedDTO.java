@@ -8,10 +8,7 @@ import lombok.Getter;
 public class QuizGroupSolvedDTO {
 
     private Long userId;
-
     private Long quizGroupId;
-
     private Integer latestScore;
-
     private Integer highestScore;
 }

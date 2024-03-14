@@ -6,11 +6,13 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 @Embeddable
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 public class QuizSolvedId implements Serializable {
 

@@ -18,5 +18,6 @@ public class QuizGroupDTO {
     private String title;
     private String subtitle;
     private Long levelNum;
+    private Integer totalScore;
     private CategoryChapterDTO categoryChapter;
 }

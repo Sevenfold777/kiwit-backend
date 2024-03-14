@@ -14,5 +14,7 @@ public class QuizGroupWithSolvedDTO {
     private Long id;
     private String title;
     private String subtitle;
-    private QuizGroupSolved result;
+    private Long levelNum;
+    private Integer totalScore;
+    private QuizGroupSolvedDTO result;
 }

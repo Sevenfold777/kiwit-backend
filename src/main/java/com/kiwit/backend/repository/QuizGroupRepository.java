@@ -21,4 +21,5 @@ public interface QuizGroupRepository extends JpaRepository<QuizGroup, Long> {
             "where G.id = :groupId")
     Optional<QuizGroup> findGroupWithQuiz(@Param("groupId") Long groupId);
 
+
 }

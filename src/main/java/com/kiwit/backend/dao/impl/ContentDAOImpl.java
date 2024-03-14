@@ -32,20 +32,8 @@ public class ContentDAOImpl implements ContentDAO {
     }
 
     @Override
-    public List<Content> selectContentListKept(Long userId, Integer next, Integer limit) {
-        List<Content> contentList = contentRepository.findContentKept(userId);
-        return contentList;
-    }
-
-    @Override
-    public List<Content> selectContentListStudied(Long userId, Integer next, Integer limit) {
-        List<Content> contentList = contentRepository.findContentStudied(userId);
-        return contentList;
-    }
-
-    @Override
-    public Content selectContentWithProgress(Long userId) {
-        Content content = contentRepository.findByProgressUserId(userId);
-        return  content;
+    public Content selectNextContent(Long userId) {
+        Optional<Content> content = contentRepository.findNextContent(userId);
+        return  content.get();
     }
 }

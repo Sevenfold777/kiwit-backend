@@ -13,5 +13,5 @@ public interface CategoryChapterRepository extends JpaRepository<CategoryChapter
             "from CategoryChapter Ch " +
             "join fetch Ch.contentList " +
             "where Ch.category.id = :categoryId")
-    public List<CategoryChapter> findByCategoryId(@Param("categoryId") Long categoryId);
+    List<CategoryChapter> findByCategoryId(@Param("categoryId") Long categoryId);
 }

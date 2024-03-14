@@ -7,6 +7,8 @@ import com.kiwit.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class UserDAOImpl implements UserDAO {
 
@@ -24,19 +26,15 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public User updateUser(User user) {
-        return null;
-    }
-
-    @Override
     public User selectUser(Long userId) {
-        return null;
+        Optional<User> user = userRepository.findById(userId);
+        return user.get();
     }
 
-
     @Override
-    public User updateNickname(Long userId, String nickname) {
-        return null;
+    public User selectUserWithInfo(Long userId) {
+        Optional<User> user = userRepository.findUserWithInfo(userId);
+        return user.get();
     }
 
 }

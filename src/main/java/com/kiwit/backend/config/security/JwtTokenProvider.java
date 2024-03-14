@@ -37,8 +37,11 @@ public class JwtTokenProvider {
     private Key SECRET_KEY;
 
     // [expires in] Access Token = 1hour, refresh Token = 15days (in milliseconds)
-    private final Long accessTokenExpires = 1000L * 60 * 60;
-    private final Long refreshTokenExpires = 1000L * 60 * 60 * 24 * 15;
+    private static final Long accessTokenExpires = 1000L * 60 * 60;
+    private static final Long refreshTokenExpires = 1000L * 60 * 60 * 24 * 15;
+    private static String AUTH_KEY = "Authorization";
+    private static String AUTH_PREFIX = "Bearer ";
+
 
     @PostConstruct
     protected void init() {
@@ -95,7 +98,14 @@ public class JwtTokenProvider {
 
     public String resolveToken(HttpServletRequest request){
         LOGGER.info("[resolveToken] HTTP 헤더에서 Token 값 추출");
-        return request.getHeader("Authorization");
+        String token = request.getHeader(AUTH_KEY);
+
+        // check Auth header format
+        if (token == null || token.isEmpty() || !token.startsWith(AUTH_PREFIX)) {
+            return null;
+        }
+
+        return token.substring(AUTH_PREFIX.length());
     }
 
 

@@ -48,11 +48,11 @@ public class User extends BaseEntity implements UserDetails {
     @ColumnDefault("ACTIVE")
     private String status;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, optional = false)
     @PrimaryKeyJoinColumn
     private UserInfo userInfo;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, optional = false)
     private Progress progress;
 
     @OneToMany(mappedBy = "user")
@@ -64,12 +64,6 @@ public class User extends BaseEntity implements UserDetails {
     @PrimaryKeyJoinColumn
     @ToString.Exclude
     private List<ContentStudied> contentStudiedList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    private List<TrophyAwarded> trophyAwardedList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    private List<QuizGroupSolved> quizGroupSolvedList = new ArrayList<>();
 
 
     @Override

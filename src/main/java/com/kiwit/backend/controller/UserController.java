@@ -1,12 +1,16 @@
 package com.kiwit.backend.controller;
 
+import com.kiwit.backend.domain.User;
 import com.kiwit.backend.dto.*;
 import com.kiwit.backend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/user")
@@ -37,8 +41,8 @@ public class UserController {
     @Operation(summary = "sign out", description = "remove refresh token")
     @PatchMapping(value = "/sign-out")
     public ResponseEntity<Void>
-    signOut(@RequestBody SignInReqDTO signInReqDTO) {
-        userService.signOut();
+    signOut(@AuthenticationPrincipal User authUser) {
+        userService.signOut(authUser);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
@@ -54,48 +58,49 @@ public class UserController {
     @Operation(summary = "my info", description = "get my info")
     @GetMapping()
     public ResponseEntity<UserDTO>
-    getMyInfo() {
-        UserDTO userDTO = userService.myInfo();
+    getMyInfo(@AuthenticationPrincipal User authUser) {
+        UserDTO userDTO = userService.myInfo(authUser);
         return ResponseEntity.status(HttpStatus.OK).body(userDTO);
     }
 
     @Operation(summary = "edit user", description = "edit my info")
     @PatchMapping()
     public ResponseEntity<UserDTO>
-    editUser(@RequestBody UserDTO userDTO) {
-        UserDTO resDTO = userService.editUser(userDTO);
+    editUser(@AuthenticationPrincipal User authUser,
+             @RequestBody EditUserReqDTO userDTO) {
+        UserDTO resDTO = userService.editUser(authUser, userDTO);
         return ResponseEntity.status(HttpStatus.OK).body(resDTO);
     }
 
     @Operation(summary = "(soft) delete user", description = "soft delete user")
     @DeleteMapping()
     public ResponseEntity<Void>
-    withdrawUser() {
-        userService.withdrawUser();
+    withdrawUser(@AuthenticationPrincipal User authUser) {
+        userService.withdrawUser(authUser);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
     @Operation(summary = "My trophy awarded list.", description = "my trophies")
     @GetMapping("/trophy")
-    public ResponseEntity<TrophyDTO>
-    getMyTrophyList() {
-        TrophyDTO resDTO = userService.getMyTrophyList();
+    public ResponseEntity<List<TrophyAwardedDTO>>
+    getMyTrophyList(@AuthenticationPrincipal User authUser) {
+        List<TrophyAwardedDTO> resDTO = userService.getMyTrophyList(authUser);
         return ResponseEntity.status(HttpStatus.OK).body(resDTO);
     }
 
     @Operation(summary = "My trophy awarded most recently.", description = "my latest trophy")
     @GetMapping("/trophy/latest")
-    public ResponseEntity<TrophyDTO>
-    getMyTrophyLatest() {
-        TrophyDTO resDTO = userService.getMyTrophyLatest();
+    public ResponseEntity<TrophyAwardedDTO>
+    getMyTrophyLatest(@AuthenticationPrincipal User authUser) {
+        TrophyAwardedDTO resDTO = userService.getMyTrophyLatest(authUser);
         return ResponseEntity.status(HttpStatus.OK).body(resDTO);
     }
 
     @Operation(summary = "User Stat", description = "my activity stat")
     @GetMapping("/stat")
     public ResponseEntity<StatDTO>
-    getMyStat() {
-        StatDTO resDTO = userService.getMyStat();
+    getMyStat(@AuthenticationPrincipal User authUser) {
+        StatDTO resDTO = userService.getMyStat(authUser);
         return ResponseEntity.status(HttpStatus.OK).body(resDTO);
     }
 }

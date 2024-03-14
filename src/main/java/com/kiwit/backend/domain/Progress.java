@@ -19,7 +19,7 @@ public class Progress extends BaseEntity {
     @Column(name = "user_id")
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "user_id")
     private User user;
@@ -30,5 +30,9 @@ public class Progress extends BaseEntity {
 
     public Progress(User user) {
         this.user = user;
+    }
+
+    public Long getContentId() {
+        return content.getId();
     }
 }

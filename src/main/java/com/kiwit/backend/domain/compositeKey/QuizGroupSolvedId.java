@@ -2,15 +2,13 @@ package com.kiwit.backend.domain.compositeKey;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 
 import java.io.Serializable;
 
 @Embeddable
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 public class QuizGroupSolvedId implements Serializable {
 

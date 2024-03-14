@@ -28,12 +28,12 @@ public class QuizSolved extends BaseEntity {
     @ColumnDefault("false")
     private Boolean kept;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId("userId")
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId("quizId")
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;

@@ -13,9 +13,5 @@ public interface ContentDAO {
 
     Content selectContentWithPayload(Long contentId);
 
-    List<Content> selectContentListKept(Long userId, Integer next, Integer limit);
-
-    List<Content> selectContentListStudied(Long userId, Integer next, Integer limit);
-
-    Content selectContentWithProgress(Long userId);
+    Content selectNextContent(Long userId);
 }

@@ -5,6 +5,7 @@ import com.kiwit.backend.domain.*;
 import com.kiwit.backend.domain.compositeKey.ContentStudiedId;
 import com.kiwit.backend.dto.*;
 import com.kiwit.backend.service.ContentService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,18 +20,21 @@ public class ContentServiceImpl implements ContentService {
     private final ContentStudiedDAO contentStudiedDAO;
     private final CategoryDAO categoryDAO;
     private final CategoryChapterDAO categoryChapterDAO;
+    private final ProgressDAO progressDAO;
 
     @Autowired
     public ContentServiceImpl(ContentDAO contentDAO,
                               LevelDAO levelDAO,
                               ContentStudiedDAO contentStudiedDAO,
                               CategoryDAO categoryDAO,
-                              CategoryChapterDAO categoryChapterDAO) {
+                              CategoryChapterDAO categoryChapterDAO,
+                              ProgressDAO progressDAO) {
         this.contentDAO = contentDAO;
         this.levelDAO = levelDAO;
         this.contentStudiedDAO = contentStudiedDAO;
         this.categoryDAO = categoryDAO;
         this.categoryChapterDAO = categoryChapterDAO;
+        this.progressDAO = progressDAO;
     }
 
     @Override
@@ -100,11 +104,15 @@ public class ContentServiceImpl implements ContentService {
         return contentDTO;
     }
 
+    @Transactional
     @Override
     public ContentStudiedDTO studyContent(User authUser, Long contentId) {
 
         ContentStudied contentStudied = ContentStudied.builder()
                 .id(new ContentStudiedId(authUser.getId(), contentId))
+                .user(new User(authUser.getId()))
+                .content(new Content(contentId))
+                .kept(false)
                 .build();
 
         ContentStudied savedStudy = contentStudiedDAO.insertContentStudied(contentStudied);
@@ -113,8 +121,15 @@ public class ContentServiceImpl implements ContentService {
                 .userId(savedStudy.getId().getUserId())
                 .contentId(savedStudy.getId().getContentId())
                 .myAnswer(savedStudy.getMyAnswer())
-                .kept(savedStudy.getKept())
+                .kept(savedStudy.getKept()) // false --> savedStudy.getKept can be?
+                .createdAt(savedStudy.getCreatedAt())
+                .updatedAt(savedStudy.getUpdatedAt())
                 .build();
+
+        Progress progress = progressDAO.selectProgressWithUser(authUser.getId());
+        if (progress.getContentId() < contentId) {
+            progress.setContent(savedStudy.getContent());
+        }
 
         return contentStudiedDTO;
 
@@ -122,6 +137,9 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public ContentStudiedDTO submitExercise(User authUser, Long contentId, Boolean answer) {
+        // TODO
+        // handle when content studied exist
+        // : unnecessary update occurs for updatedAt
 
         ContentStudied updatedStudy = contentStudiedDAO.updateContentStudied(authUser.getId(), contentId, answer);
 
@@ -130,6 +148,8 @@ public class ContentServiceImpl implements ContentService {
                 .contentId(updatedStudy.getId().getContentId())
                 .myAnswer(updatedStudy.getMyAnswer())
                 .kept(updatedStudy.getKept())
+                .createdAt(updatedStudy.getCreatedAt())
+                .updatedAt(updatedStudy.getUpdatedAt())
                 .build();
 
         return contentStudiedDTO;
@@ -195,7 +215,10 @@ public class ContentServiceImpl implements ContentService {
     }
     @Override
     public ContentDTO getContentProgress(User authUser) {
-        Content content = contentDAO.selectContentWithProgress(authUser.getId());
+        // TODO
+        // handle when there's no more content left
+        // decide rule for content Id
+        Content content = contentDAO.selectNextContent(authUser.getId());
 
         ContentDTO contentDTO
                 = ContentDTO
@@ -204,7 +227,9 @@ public class ContentServiceImpl implements ContentService {
                 .title(content.getTitle())
                 .point(content.getPoint())
                 .exercise(content.getExercise())
+                .answer(content.getAnswer())
                 .levelNum(content.getLevelNum())
+                .categoryChapterId(content.getCategoryChapterId())
                 .build();
 
         return contentDTO;
@@ -213,77 +238,82 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public List<ContentWithStudiedDTO> getContentKept(User authUser, Integer next, Integer limit) {
 
-        List<Content> contentList = contentDAO.selectContentListKept(authUser.getId(), next, limit);
+        List<ContentStudied> contentStudiedList
+                = contentStudiedDAO.selectContentListKept(authUser.getId(), next, limit);
 
         List<ContentWithStudiedDTO> contentDTOList = new ArrayList<>();
 
-        for (Content c: contentList) {
+        for (ContentStudied s: contentStudiedList) {
 
             // prepare content studied dto
-            List<ContentStudiedDTO> contentStudiedDTOList = new ArrayList<>();
+            ContentStudiedDTO contentStudiedDTO
+                    = ContentStudiedDTO
+                    .builder()
+                    .userId(s.getId().getUserId())
+                    .contentId(s.getId().getContentId())
+                    .myAnswer(s.getMyAnswer())
+                    .kept(s.getKept())
+                    .createdAt(s.getCreatedAt())
+                    .updatedAt(s.getUpdatedAt())
+                    .build();
 
-            for (ContentStudied study  : c.getContentStudiedList()) {
-                ContentStudiedDTO contentStudiedDTO
-                        = ContentStudiedDTO
-                        .builder()
-                        .userId(study.getId().getUserId())
-                        .contentId(study.getId().getContentId())
-                        .myAnswer(study.getMyAnswer())
-                        .kept(study.getKept())
-                        .build();
+            Content c = s.getContent();
 
-                contentStudiedDTOList.add(contentStudiedDTO);
-            }
 
             ContentWithStudiedDTO dto = ContentWithStudiedDTO.builder()
                     .id(c.getId())
                     .title(c.getTitle())
                     .point(c.getPoint())
                     .exercise(c.getExercise())
+                    .answer(c.getAnswer())
                     .levelNum(c.getLevelNum())
                     .categoryChapterId(c.getCategoryChapterId())
-                    .contentStudiedList(contentStudiedDTOList)
+                    .contentStudied(contentStudiedDTO)
                     .build();
             contentDTOList.add(dto);
+
         }
 
         return contentDTOList;
     }
+
     @Override
     public List<ContentWithStudiedDTO> getContentStudied(User authUser, Integer next, Integer limit) {
 
-        List<Content> contentList = contentDAO.selectContentListStudied(authUser.getId(), next, limit);
+        List<ContentStudied> contentStudiedList
+                = contentStudiedDAO.selectContentListStudied(authUser.getId(), next, limit);
 
         List<ContentWithStudiedDTO> contentDTOList = new ArrayList<>();
 
-        for (Content c: contentList) {
+        for (ContentStudied s: contentStudiedList) {
 
             // prepare content studied dto
-            List<ContentStudiedDTO> contentStudiedDTOList = new ArrayList<>();
+            ContentStudiedDTO contentStudiedDTO
+                    = ContentStudiedDTO
+                    .builder()
+                    .userId(s.getId().getUserId())
+                    .contentId(s.getId().getContentId())
+                    .myAnswer(s.getMyAnswer())
+                    .kept(s.getKept())
+                    .createdAt(s.getCreatedAt())
+                    .updatedAt(s.getUpdatedAt())
+                    .build();
 
-            for (ContentStudied study  : c.getContentStudiedList()) {
-                ContentStudiedDTO contentStudiedDTO
-                        = ContentStudiedDTO
-                        .builder()
-                        .userId(study.getId().getUserId())
-                        .contentId(study.getId().getContentId())
-                        .myAnswer(study.getMyAnswer())
-                        .kept(study.getKept())
-                        .build();
+            Content c = s.getContent();
 
-                contentStudiedDTOList.add(contentStudiedDTO);
-            }
 
             ContentWithStudiedDTO dto = ContentWithStudiedDTO.builder()
                     .id(c.getId())
                     .title(c.getTitle())
                     .point(c.getPoint())
                     .exercise(c.getExercise())
+                    .answer(c.getAnswer())
                     .levelNum(c.getLevelNum())
                     .categoryChapterId(c.getCategoryChapterId())
-                    .contentStudiedList(contentStudiedDTOList)
+                    .contentStudied(contentStudiedDTO)
                     .build();
             contentDTOList.add(dto);
+
         }
 
         return contentDTOList;
@@ -299,6 +329,8 @@ public class ContentServiceImpl implements ContentService {
                 .contentId(keptStudy.getId().getContentId())
                 .myAnswer(keptStudy.getMyAnswer())
                 .kept(keptStudy.getKept())
+                .createdAt(keptStudy.getCreatedAt())
+                .updatedAt(keptStudy.getUpdatedAt())
                 .build();
 
         return contentStudiedDTO;

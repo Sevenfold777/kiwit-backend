@@ -10,12 +10,12 @@ public interface ContentService {
     List<LevelDTO> getLevelList();
     List<ContentDTO> getLevelContent(Long levelId);
     ContentWithPayloadDTO getContentPayload(Long contentId);
-    ContentStudiedDTO studyContent(User authUser, Long contentId);
-    ContentStudiedDTO submitExercise(User authUser, Long contentId, Boolean answer);
+    ContentStudiedDTO studyContent(User user, Long contentId);
+    ContentStudiedDTO submitExercise(User user, Long contentId, Boolean answer);
     List<CategoryDTO> getCategoryList();
     List<CategoryChapterWithContentDTO> getCategoryChapterWithContent(Long categoryId);
-    ContentDTO getContentProgress(User authUser);
-    List<ContentWithStudiedDTO> getContentKept(User authUser, Integer next, Integer limit);
-    List<ContentWithStudiedDTO> getContentStudied(User authUser, Integer next, Integer limit);
-    ContentStudiedDTO keepContent(User authUser, Long contentId);
+    ContentDTO getContentProgress(User user);
+    List<ContentWithStudiedDTO> getContentKept(User user, Integer next, Integer limit);
+    List<ContentWithStudiedDTO> getContentStudied(User user, Integer next, Integer limit);
+    ContentStudiedDTO keepContent(User user, Long contentId);
 }

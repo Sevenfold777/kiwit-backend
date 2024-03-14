@@ -32,5 +32,11 @@ public class QuizGroupDAOImpl implements QuizGroupDAO {
         return quizGroup.get();
     }
 
+    @Override
+    public QuizGroup selectGroup(Long groupId) {
+        Optional<QuizGroup> quizGroup = quizGroupRepository.findById(groupId);
+        return quizGroup.get();
+    }
+
 
 }

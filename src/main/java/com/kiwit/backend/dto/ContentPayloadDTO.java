@@ -1,5 +1,6 @@
 package com.kiwit.backend.dto;
 
+import com.kiwit.backend.common.constant.ContentType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,6 +9,6 @@ import lombok.Getter;
 public class ContentPayloadDTO {
     private Integer number;
     private Long contentId;
-    private String type;
+    private ContentType type;
     private String payload;
 }

@@ -1,5 +1,7 @@
 package com.kiwit.backend.dto;
 
+import com.kiwit.backend.common.constant.Plan;
+import com.kiwit.backend.common.constant.Status;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +13,6 @@ public class UserDTO {
     private String email;
     private String nickname;
     private Integer point;
-    private String plan;
-    private String status;
+    private Plan plan;
+    private Status status;
 }

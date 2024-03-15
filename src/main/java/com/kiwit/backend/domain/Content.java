@@ -24,6 +24,9 @@ public class Content extends BaseEntity {
     private String title;
 
     @Column(nullable = false)
+    private Integer orderCat;
+
+    @Column(nullable = false)
     @ColumnDefault("0")
     private Integer point;
 

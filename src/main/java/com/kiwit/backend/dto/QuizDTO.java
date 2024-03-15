@@ -1,5 +1,6 @@
 package com.kiwit.backend.dto;
 
+import com.kiwit.backend.common.constant.QuizType;
 import com.kiwit.backend.domain.QuizChoice;
 import com.kiwit.backend.domain.QuizGroup;
 import com.kiwit.backend.domain.QuizSolved;
@@ -13,7 +14,7 @@ import java.util.List;
 @Builder
 public class QuizDTO {
     private Long id;
-    private String type;
+    private QuizType type;
     private String title;
     private String question;
     private String answer;

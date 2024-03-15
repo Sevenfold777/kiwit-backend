@@ -1,5 +1,6 @@
 package com.kiwit.backend.service.impl;
 
+import com.kiwit.backend.common.constant.Status;
 import com.kiwit.backend.config.security.JwtTokenProvider;
 import com.kiwit.backend.dao.ProgressDAO;
 import com.kiwit.backend.dao.TrophyAwardedDAO;
@@ -89,7 +90,7 @@ public class UserServiceImpl implements UserService {
 
         // dirty checking
         User user = userDAO.selectUserWithInfo(userId);
-        user.setStatus("ACTIVE");
+        user.setStatus(Status.ACTIVATED);
         user.getUserInfo().setJwtRefreshToken(refreshToken);
 
         SignInResDTO signInResDTO = new SignInResDTO(accessToken, refreshToken);
@@ -174,7 +175,7 @@ public class UserServiceImpl implements UserService {
         User me = userDAO.selectUserWithInfo(user.getId());
 
         // TODO: enum
-        me.setStatus("INACTIVE");
+        me.setStatus(Status.DEACTIVATED);
         me.getUserInfo().setJwtRefreshToken(null);
         return;
     }

@@ -1,6 +1,8 @@
 package com.kiwit.backend.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.kiwit.backend.common.constant.Plan;
+import com.kiwit.backend.common.constant.Status;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -40,13 +42,13 @@ public class User extends BaseEntity implements UserDetails {
     @ColumnDefault("0")
     private Integer point;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @ColumnDefault("BASIC")
-    private String plan;
+    private Plan plan;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @ColumnDefault("ACTIVE")
-    private String status;
+    private Status status;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, optional = false)
     @PrimaryKeyJoinColumn

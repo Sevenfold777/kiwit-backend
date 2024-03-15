@@ -1,5 +1,6 @@
 package com.kiwit.backend.domain;
 
+import com.kiwit.backend.common.constant.QuizType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,8 +22,9 @@ public class Quiz extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String type;
+    private QuizType type;
 
     @Column(nullable = false)
     private String title;

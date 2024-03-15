@@ -1,6 +1,7 @@
 package com.kiwit.backend.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kiwit.backend.common.constant.Provider;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -33,8 +34,9 @@ public class UserInfo {
 
     private String fcmToken;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String provider;
+    private Provider provider;
 
     @LastModifiedDate
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")

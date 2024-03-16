@@ -12,6 +12,5 @@ public class QuizAnswerDTO {
     @Positive
     private Long quizId;
 
-    @NotBlank
     private String answer;
 }

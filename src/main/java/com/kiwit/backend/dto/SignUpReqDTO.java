@@ -20,7 +20,6 @@ public class SignUpReqDTO {
     @NotBlank
     private String nickname;
 
-    @NotBlank
     private Provider provider;
 
 }

@@ -31,11 +31,6 @@ public class SecurityConfig {
         http.sessionManagement(sessionManagement ->
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-                UsernamePasswordAuthenticationFilter.class);
-
-        http.exceptionHandling(exceptionHandling -> exceptionHandling
-                .authenticationEntryPoint(new JwtExceptionFilter()));
 
         http.authorizeHttpRequests(authz -> authz
                 .requestMatchers("/api/v1/user/refresh",
@@ -43,6 +38,13 @@ public class SecurityConfig {
                         "/api/v1/user/sign-in").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .anyRequest().authenticated());
+
+
+        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                UsernamePasswordAuthenticationFilter.class);
+
+        http.exceptionHandling(exceptionHandling -> exceptionHandling
+                .authenticationEntryPoint(new JwtExceptionFilter()));
 
         return http.build();
     }

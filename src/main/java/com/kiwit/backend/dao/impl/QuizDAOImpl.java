@@ -17,14 +17,4 @@ public class QuizDAOImpl implements QuizDAO {
     public QuizDAOImpl(QuizRepository quizRepository) {
         this.quizRepository = quizRepository;
     }
-
-    @Override
-    public List<Quiz> selectQuizKept(Long userId, Integer next, Integer limit, Boolean kept) {
-        return null;
-    }
-
-    @Override
-    public List<Quiz> selectQuizSolved(Long userId, Integer next, Integer limit) {
-        return null;
-    }
 }

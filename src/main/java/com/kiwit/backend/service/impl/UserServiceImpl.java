@@ -1,7 +1,9 @@
 package com.kiwit.backend.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kiwit.backend.common.constant.Provider;
 import com.kiwit.backend.common.constant.Status;
+import com.kiwit.backend.common.exception.CustomException;
 import com.kiwit.backend.config.security.JwtTokenProvider;
 import com.kiwit.backend.dao.ProgressDAO;
 import com.kiwit.backend.dao.TrophyAwardedDAO;
@@ -15,11 +17,13 @@ import com.kiwit.backend.service.UserService;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -92,13 +96,7 @@ public class UserServiceImpl implements UserService {
                 authResult = kakaoAuthService.getUserProfile(signInReqDTO.getToken());
             }
             default -> {
-                authResult = SignUpReqDTO
-                        .builder()
-                        .email("oopoop@oop.com")
-                        .nickname("ggg")
-                        .provider(Provider.KAKAO)
-                        .build();
-                // throw error
+                throw new CustomException(HttpStatus.BAD_REQUEST);
             }
         }
 
@@ -126,8 +124,9 @@ public class UserServiceImpl implements UserService {
                     .provider(authResult.getProvider())
                     .build();
 
-//            throw new BadRequestException(signUpReqDTO);
-            return null;
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            throw new CustomException(HttpStatus.ACCEPTED, objectMapper.convertValue(signUpReqDTO, Map.class));
         }
     }
 
@@ -144,7 +143,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public SignInResDTO refreshToken(RefreshTokenDTO refreshTokenDTO) {
-         Long userId = jwtTokenProvider.getUserId(refreshTokenDTO.getRefreshToken());
+
+        Long userId = jwtTokenProvider.getUserId(refreshTokenDTO.getRefreshToken());
 
         String accessToken = jwtTokenProvider.issueToken(userId, false);
         String refreshToken = jwtTokenProvider.issueToken(userId, true);
@@ -154,9 +154,7 @@ public class UserServiceImpl implements UserService {
 
         // Check if refresh token is valid
         if (!userInfo.getJwtRefreshToken().equals(refreshTokenDTO.getRefreshToken())) {
-            // TODO: throw error
-            System.out.println("Error!");
-            return null;
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
 
         userInfo.setJwtRefreshToken(refreshToken);
@@ -186,20 +184,24 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDTO editUser(User user, EditUserReqDTO userDTO) {
-        User me = userDAO.selectUser(user.getId());
-        me.setNickname(userDTO.getNickname());
+        try {
+            User me = userDAO.selectUser(user.getId());
+            me.setNickname(userDTO.getNickname());
 
-        UserDTO userResDTO = UserDTO
-                .builder()
-                .id(me.getId())
-                .email(me.getEmail())
-                .nickname(me.getNickname())
-                .plan(me.getPlan())
-                .status(me.getStatus())
-                .point(me.getPoint())
-                .build();
+            UserDTO userResDTO = UserDTO
+                    .builder()
+                    .id(me.getId())
+                    .email(me.getEmail())
+                    .nickname(me.getNickname())
+                    .plan(me.getPlan())
+                    .status(me.getStatus())
+                    .point(me.getPoint())
+                    .build();
 
-        return userResDTO;
+            return userResDTO;
+        } catch (Exception e) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Transactional
@@ -207,10 +209,8 @@ public class UserServiceImpl implements UserService {
     public void withdrawUser(User user) {
         User me = userDAO.selectUserWithInfo(user.getId());
 
-        // TODO: enum
         me.setStatus(Status.DEACTIVATED);
         me.getUserInfo().setJwtRefreshToken(null);
-        return;
     }
 
     @Override

@@ -19,7 +19,6 @@ public class LevelDAOImpl implements LevelDAO {
     }
 
     public List<Level> selectLevelList() {
-        List<Level> levelList = levelRepository.findAll();
-        return levelList;
+        return levelRepository.findAll();
     }
 }

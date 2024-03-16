@@ -1,5 +1,7 @@
 package com.kiwit.backend.config.security;
 
+import com.kiwit.backend.common.constant.Status;
+import com.kiwit.backend.common.exception.CustomException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -84,6 +87,7 @@ public class JwtTokenProvider {
     }
 
     public Long getUserId(String token) {
+
         LOGGER.info("[getUserId] 토큰 기반 회원 구별 정보 추출");
 
         Claims claims = Jwts.parserBuilder()
@@ -94,6 +98,7 @@ public class JwtTokenProvider {
 
         LOGGER.info("[getUserId] 토큰 기반 회원 구별 정보 추출 완료, info");
         return Long.parseLong(claims.getSubject());
+
     }
 
     public String resolveToken(HttpServletRequest request){
@@ -102,6 +107,7 @@ public class JwtTokenProvider {
 
         // check Auth header format
         if (token == null || token.isEmpty() || !token.startsWith(AUTH_PREFIX)) {
+            // jwt exception handler will throw 401
             return null;
         }
 

@@ -1,9 +1,11 @@
 package com.kiwit.backend.dao.impl;
 
+import com.kiwit.backend.common.exception.CustomException;
 import com.kiwit.backend.dao.TrophyAwardedDAO;
 import com.kiwit.backend.domain.TrophyAwarded;
 import com.kiwit.backend.repository.TrophyAwardedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,13 +22,15 @@ public class TrophyAwardedDAOImpl implements TrophyAwardedDAO {
 
     @Override
     public List<TrophyAwarded> selectMyTrophyAwarded(Long userId) {
-        List<TrophyAwarded> trophyAwardedList = trophyAwardedRepository.findTrophyAwarded(userId);
-        return trophyAwardedList;
+        return trophyAwardedRepository.findTrophyAwarded(userId);
     }
 
     @Override
     public TrophyAwarded selectTrophyAwardedLatest(Long userId) {
         Optional<TrophyAwarded> trophyAwarded = trophyAwardedRepository.findTrophyAwardedLatest(userId);
+        if (trophyAwarded.isEmpty()) {
+            throw new CustomException(HttpStatus.ACCEPTED);
+        }
         return trophyAwarded.get();
     }
 }

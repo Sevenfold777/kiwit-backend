@@ -11,6 +11,5 @@ public class SignInReqDTO {
     @NotBlank
     private String token;
 
-    @NotBlank
     private Provider provider;
 }

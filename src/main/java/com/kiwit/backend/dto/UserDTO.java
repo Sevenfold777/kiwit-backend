@@ -2,6 +2,7 @@ package com.kiwit.backend.dto;
 
 import com.kiwit.backend.common.constant.Plan;
 import com.kiwit.backend.common.constant.Status;
+import jakarta.validation.constraints.Email;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

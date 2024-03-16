@@ -1,10 +1,12 @@
 package com.kiwit.backend.service.impl;
 
 import com.kiwit.backend.common.constant.Provider;
+import com.kiwit.backend.common.exception.CustomException;
 import com.kiwit.backend.dto.SignUpReqDTO;
 import com.kiwit.backend.dto.kakao.KakaoUserInfoResponse;
 import com.kiwit.backend.service.KakaoAuthService;
 import org.apache.coyote.BadRequestException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -37,8 +39,7 @@ public class KakaoAuthServiceImpl implements KakaoAuthService {
 
             return authResultDTO;
         } catch (Exception e) {
-            return null;
-//            throw new BadRequestException("this is created exception!");
+            throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
     }

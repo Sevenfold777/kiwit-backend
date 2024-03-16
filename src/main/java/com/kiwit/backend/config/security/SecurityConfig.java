@@ -34,11 +34,8 @@ public class SecurityConfig {
         http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                 UsernamePasswordAuthenticationFilter.class);
 
-//        http.exceptionHandling(exceptionHandling -> exceptionHandling
-//                .accessDeniedHandler(new CustomAccessDeniedHandler()));
-//        http.exceptionHandling(exceptionHandling -> exceptionHandling
-//                .authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
-
+        http.exceptionHandling(exceptionHandling -> exceptionHandling
+                .authenticationEntryPoint(new JwtExceptionFilter()));
 
         http.authorizeHttpRequests(authz -> authz
                 .requestMatchers("/api/v1/user/refresh",

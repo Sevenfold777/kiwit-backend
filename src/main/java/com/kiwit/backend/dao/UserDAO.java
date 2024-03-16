@@ -8,5 +8,6 @@ public interface UserDAO {
     User insertUser(User user);
     User selectUser(Long userId);
     User selectUserWithInfo(Long userId);
+    User selectUserWithEmail(String email);
 
 }

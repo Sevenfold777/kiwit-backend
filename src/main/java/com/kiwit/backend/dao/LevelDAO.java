@@ -8,6 +8,4 @@ import java.util.List;
 public interface LevelDAO {
 
     List<Level> selectLevelList();
-
-
 }

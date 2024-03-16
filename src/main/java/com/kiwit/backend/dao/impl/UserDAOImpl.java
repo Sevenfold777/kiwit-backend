@@ -37,4 +37,10 @@ public class UserDAOImpl implements UserDAO {
         return user.get();
     }
 
+    @Override
+    public User selectUserWithEmail(String email) {
+        Optional<User> user = userRepository.findUserWithInfoByEmail(email);
+        return user.get();
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.kiwit.backend.dto;
 
+import com.kiwit.backend.common.constant.Provider;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +11,6 @@ public class SignInReqDTO {
     @NotBlank
     private String token;
 
-    // TODO: enumerate
     @NotBlank
-    private String provider;
+    private Provider provider;
 }

@@ -1,5 +1,6 @@
 package com.kiwit.backend.service.impl;
 
+import com.kiwit.backend.common.constant.Provider;
 import com.kiwit.backend.common.constant.Status;
 import com.kiwit.backend.config.security.JwtTokenProvider;
 import com.kiwit.backend.dao.ProgressDAO;
@@ -9,8 +10,10 @@ import com.kiwit.backend.dao.UserInfoDAO;
 import com.kiwit.backend.domain.*;
 import com.kiwit.backend.dto.*;
 import com.kiwit.backend.repository.UserRepository;
+import com.kiwit.backend.service.KakaoAuthService;
 import com.kiwit.backend.service.UserService;
 import jakarta.transaction.Transactional;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,20 +29,24 @@ public class UserServiceImpl implements UserService {
     ProgressDAO progressDAO;
     TrophyAwardedDAO trophyAwardedDAO;
     JwtTokenProvider jwtTokenProvider;
+    KakaoAuthService kakaoAuthService;
 
     @Autowired
     public UserServiceImpl(UserDAO userDAO,
                            UserInfoDAO userInfoDAO,
                            ProgressDAO progressDAO,
                            TrophyAwardedDAO trophyAwardedDAO,
-                           JwtTokenProvider jwtTokenProvider) {
+                           JwtTokenProvider jwtTokenProvider,
+                           KakaoAuthService kakaoAuthService) {
         this.userDAO = userDAO;
         this.userInfoDAO = userInfoDAO;
         this.progressDAO = progressDAO;
         this.trophyAwardedDAO = trophyAwardedDAO;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.kakaoAuthService = kakaoAuthService;
     }
 
+    @Transactional
     @Override
     public SignInResDTO signUp(SignUpReqDTO signUpReqDTO) {
         Long INIT_CONTENT = 1L;
@@ -79,23 +86,49 @@ public class UserServiceImpl implements UserService {
     public SignInResDTO signIn(SignInReqDTO signInReqDTO) {
 
         // 1. deal with third party auth token
-        // ...
+        SignUpReqDTO authResult;
+        switch (signInReqDTO.getProvider()) {
+            case KAKAO -> {
+                authResult = kakaoAuthService.getUserProfile(signInReqDTO.getToken());
+            }
+            default -> {
+                authResult = SignUpReqDTO
+                        .builder()
+                        .email("oopoop@oop.com")
+                        .nickname("ggg")
+                        .provider(Provider.KAKAO)
+                        .build();
+                // throw error
+            }
+        }
 
-        // 2. sign JWT access token, refresh token
-        // for test - sign in with id: 16
-        Long userId = 16L;
 
-        String accessToken = jwtTokenProvider.issueToken(userId, false);
-        String refreshToken = jwtTokenProvider.issueToken(userId, true);
+        try {
+            // 2-1. sign JWT access token, refresh token
+            User user = userDAO.selectUserWithEmail(authResult.getEmail());
 
-        // dirty checking
-        User user = userDAO.selectUserWithInfo(userId);
-        user.setStatus(Status.ACTIVATED);
-        user.getUserInfo().setJwtRefreshToken(refreshToken);
+            String accessToken = jwtTokenProvider.issueToken(user.getId(), false);
+            String refreshToken = jwtTokenProvider.issueToken(user.getId(), true);
 
-        SignInResDTO signInResDTO = new SignInResDTO(accessToken, refreshToken);
+            // dirty checking
+            user.setStatus(Status.ACTIVATED); // deactivated user to activated
+            user.getUserInfo().setJwtRefreshToken(refreshToken); // refresh token rotation
 
-        return signInResDTO;
+            SignInResDTO signInResDTO = new SignInResDTO(accessToken, refreshToken);
+
+            return signInResDTO;
+        } catch (Exception e) {
+            // 2-2. cannot find user with email; redirect to sign up
+            SignUpReqDTO signUpReqDTO = SignUpReqDTO
+                    .builder()
+                    .email(authResult.getEmail())
+                    .nickname(authResult.getNickname())
+                    .provider(authResult.getProvider())
+                    .build();
+
+//            throw new BadRequestException(signUpReqDTO);
+            return null;
+        }
     }
 
     @Transactional

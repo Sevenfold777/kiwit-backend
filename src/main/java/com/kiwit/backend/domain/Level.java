@@ -9,10 +9,8 @@ import java.util.List;
 @Entity
 @Table(name = "level")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-//@Builder
 @EqualsAndHashCode(of = "num")
 public class Level {
 
@@ -22,10 +20,4 @@ public class Level {
 
     @Column
     private String title;
-
-//    @OneToMany(mappedBy = "level")
-//    private List<Content> contentList = new ArrayList<>();
-
-//    @OneToMany(mappedBy = "level")
-//    private List<QuizGroup> quizGroupList = new ArrayList<>();
 }

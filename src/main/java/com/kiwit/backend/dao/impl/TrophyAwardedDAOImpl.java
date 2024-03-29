@@ -27,10 +27,7 @@ public class TrophyAwardedDAOImpl implements TrophyAwardedDAO {
 
     @Override
     public TrophyAwarded selectTrophyAwardedLatest(Long userId) {
-        Optional<TrophyAwarded> trophyAwarded = trophyAwardedRepository.findTrophyAwardedLatest(userId);
-        if (trophyAwarded.isEmpty()) {
-            throw new CustomException(HttpStatus.ACCEPTED);
-        }
-        return trophyAwarded.get();
+        return trophyAwardedRepository.findTrophyAwardedLatest(userId)
+                .orElseThrow(() -> new CustomException(HttpStatus.NO_CONTENT));
     }
 }

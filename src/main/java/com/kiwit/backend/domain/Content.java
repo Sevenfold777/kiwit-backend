@@ -10,9 +10,9 @@ import java.util.List;
 @Entity
 @Table(name = "content")
 @Getter
-//@ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class Content extends BaseEntity {
 
     @Id
@@ -38,7 +38,6 @@ public class Content extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "level_num")
-    @ToString.Exclude
     private Level level;
 
     @OneToMany(mappedBy = "content")
@@ -46,13 +45,11 @@ public class Content extends BaseEntity {
     private List<ContentPayload> payloadList = new ArrayList<>();
 
     @OneToMany(mappedBy = "content")
-    @ToString.Exclude
     @PrimaryKeyJoinColumn
     private List<ContentStudied> contentStudiedList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_chapter_id")
-    @ToString.Exclude
     private CategoryChapter categoryChapter;
 
     public Long getLevelNum() {

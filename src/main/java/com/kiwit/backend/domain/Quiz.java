@@ -2,10 +2,7 @@ package com.kiwit.backend.domain;
 
 import com.kiwit.backend.common.constant.QuizType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +10,9 @@ import java.util.List;
 @Entity
 @Table(name = "quiz")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class Quiz extends BaseEntity {
 
     @Id

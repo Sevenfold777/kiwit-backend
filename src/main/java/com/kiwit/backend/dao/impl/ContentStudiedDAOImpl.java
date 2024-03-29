@@ -1,19 +1,15 @@
 package com.kiwit.backend.dao.impl;
 
-import com.kiwit.backend.common.exception.CustomException;
 import com.kiwit.backend.dao.ContentStudiedDAO;
-import com.kiwit.backend.domain.Content;
 import com.kiwit.backend.domain.ContentStudied;
 import com.kiwit.backend.domain.compositeKey.ContentStudiedId;
 import com.kiwit.backend.repository.ContentStudiedRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class ContentStudiedDAOImpl implements ContentStudiedDAO {
@@ -27,40 +23,25 @@ public class ContentStudiedDAOImpl implements ContentStudiedDAO {
 
     @Override
     public ContentStudied insertContentStudied(ContentStudied contentStudied) {
-
-        try {
-            return contentStudiedRepository.save(contentStudied);
-        } catch (Exception e) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
-        }
+        return contentStudiedRepository.save(contentStudied);
     }
 
     @Transactional
     @Override
     public ContentStudied updateContentStudied(Long userId, Long contentId, Boolean answer) {
-
-        Optional<ContentStudied> tgtStudy = contentStudiedRepository.findById(new ContentStudiedId(userId, contentId));
-        if (tgtStudy.isEmpty()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
-        }
-
-        tgtStudy.get().setMyAnswer(answer);
-
-        return tgtStudy.get();
+        return contentStudiedRepository.findById(new ContentStudiedId(userId, contentId))
+                .orElseThrow(() -> new DataAccessException("Cannot find ContentStudied with userId and contentId.") {});
     }
 
     @Transactional
     @Override
     public ContentStudied keepContent(Long userId, Long contentId) {
-        Optional<ContentStudied> tgtStudy = contentStudiedRepository.findById(new ContentStudiedId(userId, contentId));
-        if (tgtStudy.isEmpty()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
-        }
+        ContentStudied contentStudied = contentStudiedRepository.findById(new ContentStudiedId(userId, contentId))
+                .orElseThrow(() -> new DataAccessException("Cannot find ContentStudied with userId and contentId.") {});;
 
-        ContentStudied study = tgtStudy.get();
-        study.setKept(!tgtStudy.get().getKept());
+        contentStudied.setKept(!contentStudied.getKept());
 
-        return study;
+        return contentStudied;
     }
 
     @Override

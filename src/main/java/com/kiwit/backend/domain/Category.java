@@ -3,16 +3,12 @@ package com.kiwit.backend.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Table(name = "category")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(of = "id")
 public class Category {
 
     @Id
@@ -24,5 +20,4 @@ public class Category {
 
     @Column(nullable = false)
     private String thumbnailUrl;
-
 }

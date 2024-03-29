@@ -3,15 +3,12 @@ package com.kiwit.backend.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Table(name = "trophy")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class Trophy extends BaseEntity {
 
     @Id

@@ -20,8 +20,6 @@ public class CategoryChapterDAOImpl implements CategoryChapterDAO {
 
     @Override
     public List<CategoryChapter> selectCategoryChapterListWithContent(Long categoryId) {
-        // join 확인해야
-        List<CategoryChapter> categoryChapterList =  this.categoryChapterRepository.findByCategoryId(categoryId);
-        return  categoryChapterList;
+        return this.categoryChapterRepository.findByCategoryId(categoryId);
     }
 }

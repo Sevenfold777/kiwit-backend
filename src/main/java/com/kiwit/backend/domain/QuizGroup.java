@@ -9,9 +9,9 @@ import java.util.List;
 @Entity
 @Table(name = "quiz_group")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class QuizGroup extends BaseEntity {
 
     @Id

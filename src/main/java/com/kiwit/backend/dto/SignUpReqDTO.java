@@ -11,7 +11,6 @@ import lombok.ToString;
 @Getter
 @AllArgsConstructor
 @Builder
-@ToString
 public class SignUpReqDTO {
 
     @Email

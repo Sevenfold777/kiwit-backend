@@ -12,9 +12,10 @@ import org.springframework.data.domain.Persistable;
 @Table(name = "content_studied")
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@EqualsAndHashCode(of = "id", callSuper = false)
 @DynamicInsert
 @DynamicUpdate
 public class ContentStudied extends BaseEntity {

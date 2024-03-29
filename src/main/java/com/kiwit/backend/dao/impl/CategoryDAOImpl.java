@@ -21,8 +21,6 @@ public class CategoryDAOImpl implements CategoryDAO {
 
     @Override
     public List<Category> selectCategoryList() {
-        List<Category> categoryList = this.categoryRepository.findAll();
-
-        return categoryList;
+        return this.categoryRepository.findAll();
     }
 }

@@ -9,6 +9,7 @@ import com.kiwit.backend.domain.compositeKey.QuizSolvedId;
 import com.kiwit.backend.repository.QuizSolvedRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -37,29 +38,26 @@ public class QuizSolvedDAOImpl implements QuizSolvedDAO {
     @Transactional
     @Override
     public QuizSolved keepQuiz(Long userId, Long quizId) {
-        Optional<QuizSolved> tgtQuiz = quizSolvedRepository.findById(new QuizSolvedId(userId, quizId));
+        QuizSolved quizSolved = quizSolvedRepository.findById(new QuizSolvedId(userId, quizId))
+                .orElseThrow(() -> new DataAccessException("Cannot find Quiz Solved with userId and quizId") {});
 
-        QuizSolved quizSolved = tgtQuiz.get();
-        quizSolved.setKept(!tgtQuiz.get().getKept());
+        quizSolved.setKept(!quizSolved.getKept());
 
         return quizSolved;
     }
 
     @Override
     public List<QuizSolved> selectQuizKept(Long userId) {
-        List<QuizSolved> quizSolvedList = quizSolvedRepository.findQuizKept(userId);
-        return quizSolvedList;
+        return quizSolvedRepository.findQuizKept(userId);
     }
 
     @Override
     public List<QuizSolved> selectQuizSolved(Long userId) {
-        List<QuizSolved> quizSolvedList = quizSolvedRepository.findQuizSolved(userId);
-        return quizSolvedList;
+        return quizSolvedRepository.findQuizSolved(userId);
     }
 
     @Override
     public List<QuizSolved> selectQuizSolvedWithQuizByGroup(Long userId, Long groupId) {
-        List<QuizSolved> quizSolvedList = quizSolvedRepository.findQuizSolvedWithQuiz(userId, groupId);
-        return quizSolvedList;
+        return quizSolvedRepository.findQuizSolvedWithQuiz(userId, groupId);
     }
 }

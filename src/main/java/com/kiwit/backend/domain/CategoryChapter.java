@@ -9,7 +9,6 @@ import java.util.List;
 @Entity
 @Table(name = "category_chapter")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")

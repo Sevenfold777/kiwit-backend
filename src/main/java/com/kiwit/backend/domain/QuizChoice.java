@@ -2,17 +2,14 @@ package com.kiwit.backend.domain;
 
 import com.kiwit.backend.domain.compositeKey.QuizChoiceId;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "quiz_choice")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class QuizChoice {
 
     @EmbeddedId
@@ -25,6 +22,4 @@ public class QuizChoice {
     @MapsId("quizId")
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
-
-
 }

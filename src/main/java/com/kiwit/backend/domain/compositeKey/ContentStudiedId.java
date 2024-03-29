@@ -2,17 +2,15 @@ package com.kiwit.backend.domain.compositeKey;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 
 @Embeddable
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
+@EqualsAndHashCode
 public class ContentStudiedId implements Serializable {
 
     @Column(name = "user_id")

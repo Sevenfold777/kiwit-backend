@@ -5,6 +5,7 @@ import com.kiwit.backend.dao.UserInfoDAO;
 import com.kiwit.backend.domain.UserInfo;
 import com.kiwit.backend.repository.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -22,38 +23,22 @@ public class UserInfoDAOImpl implements UserInfoDAO {
 
     @Override
     public UserInfo findUserInfo(Long userId) {
-        Optional<UserInfo> savedUserInfo = userInfoRepository.findById(userId);
-        if (savedUserInfo.isEmpty()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
-        }
-        return savedUserInfo.get();
+        return userInfoRepository.findById(userId)
+                .orElseThrow(() -> new DataAccessException("Cannot find User Info by userId.") {});
     }
 
     @Override
     public UserInfo insertUserInfo(UserInfo userInfo) {
-        try {
-            return userInfoRepository.save(userInfo);
-        } catch (Exception e) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
-        }
-
+        return userInfoRepository.save(userInfo);
     }
 
     @Override
     public UserInfo updateUserInfo(UserInfo userInfo) {
-        try {
-            return userInfoRepository.save(userInfo);
-        } catch (Exception e) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
-        }
+        return userInfoRepository.save(userInfo);
     }
 
     @Override
     public UserInfo updateRefreshToken(UserInfo userInfo) {
-        try {
-            return userInfoRepository.save(userInfo);
-        } catch (Exception e) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
-        }
+        return userInfoRepository.save(userInfo);
     }
 }

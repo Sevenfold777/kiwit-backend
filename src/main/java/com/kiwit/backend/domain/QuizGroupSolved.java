@@ -11,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class QuizGroupSolved extends BaseEntity {
     
     @EmbeddedId

@@ -6,12 +6,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.apache.commons.lang3.builder.ToStringExclude;
 
-@Data
+@Entity
+@Table(name = "content_payload")
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@ToString
-@Table(name = "content_payload")
+@EqualsAndHashCode(of = "id")
 public class ContentPayload {
 
     @EmbeddedId
@@ -26,10 +26,6 @@ public class ContentPayload {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("contentId")
-    @ToString.Exclude
     @JoinColumn(name = "content_id", referencedColumnName = "id")
     private Content content;
-
 }
-
-

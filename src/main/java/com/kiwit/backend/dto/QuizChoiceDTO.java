@@ -8,6 +8,6 @@ import lombok.Getter;
 public class QuizChoiceDTO {
 
     private Integer number;
-    private long quizId;
+    private Long quizId;
     private String payload;
 }

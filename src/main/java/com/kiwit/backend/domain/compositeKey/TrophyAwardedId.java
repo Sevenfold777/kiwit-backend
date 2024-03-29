@@ -3,12 +3,15 @@ package com.kiwit.backend.domain.compositeKey;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Id;
-import lombok.Data;
+import lombok.*;
 
 import java.io.Serializable;
 
 @Embeddable
-@Data
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 public class TrophyAwardedId implements Serializable {
 
     @Column(name = "user_id")
@@ -16,6 +19,4 @@ public class TrophyAwardedId implements Serializable {
 
     @Column(name = "trophy_id")
     private Long trophyId;
-
-
 }

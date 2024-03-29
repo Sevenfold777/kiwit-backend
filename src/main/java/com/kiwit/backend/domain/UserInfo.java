@@ -13,11 +13,12 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "user_info")
 @Getter
-//@Setter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
+@EqualsAndHashCode(of = "id")
 @DynamicUpdate
 public class UserInfo {
     @Id
@@ -30,6 +31,7 @@ public class UserInfo {
     @ToString.Exclude
     private User user;
 
+    @Setter
     private String jwtRefreshToken;
 
     private String fcmToken;
@@ -42,7 +44,4 @@ public class UserInfo {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime latestVisit;
 
-    public void setJwtRefreshToken(String jwtRefreshToken) {
-        this.jwtRefreshToken = jwtRefreshToken;
-    }
 }

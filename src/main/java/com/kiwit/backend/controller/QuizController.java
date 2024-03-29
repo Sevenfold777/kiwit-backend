@@ -3,6 +3,7 @@ package com.kiwit.backend.controller;
 import com.kiwit.backend.domain.User;
 import com.kiwit.backend.dto.*;
 import com.kiwit.backend.service.QuizService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,7 @@ public class QuizController {
     public ResponseEntity<QuizGroupSolvedDTO>
     submitAnswers(@AuthenticationPrincipal User authUser,
                   @PathVariable Long groupId,
-                  @RequestBody QuizAnswerListDTO quizAnswerListDTO) {
+                  @Valid @RequestBody QuizAnswerListDTO quizAnswerListDTO) {
         QuizGroupSolvedDTO resDto = quizService.submitAnswers(authUser, groupId, quizAnswerListDTO);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
@@ -51,7 +52,7 @@ public class QuizController {
     public ResponseEntity<QuizGroupSolvedDTO>
     resubmitAnswers(@AuthenticationPrincipal User authUser,
                     @PathVariable Long groupId,
-                    @RequestBody QuizAnswerListDTO quizAnswerListDTO) {
+                    @Valid @RequestBody QuizAnswerListDTO quizAnswerListDTO) {
         QuizGroupSolvedDTO resDto = quizService.resubmitAnswers(authUser, groupId, quizAnswerListDTO);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }

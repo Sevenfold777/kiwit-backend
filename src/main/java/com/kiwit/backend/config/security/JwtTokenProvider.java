@@ -1,38 +1,35 @@
 package com.kiwit.backend.config.security;
 
-import com.kiwit.backend.common.constant.Status;
-import com.kiwit.backend.common.exception.CustomException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 
 @Component
-@RequiredArgsConstructor
 public class JwtTokenProvider {
 
     private final Logger LOGGER = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     private final UserDetailsService userDetailsService;
+
+    @Autowired
+    public JwtTokenProvider(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Value("${jwt.secret}")
     private String SECRET_KEY_RAW;
@@ -42,9 +39,8 @@ public class JwtTokenProvider {
     // [expires in] Access Token = 1hour, refresh Token = 15days (in milliseconds)
     private static final Long accessTokenExpires = 1000L * 60 * 60;
     private static final Long refreshTokenExpires = 1000L * 60 * 60 * 24 * 15;
-    private static String AUTH_KEY = "Authorization";
-    private static String AUTH_PREFIX = "Bearer ";
-
+    private static final String AUTH_KEY = "Authorization";
+    private static final String AUTH_PREFIX = "Bearer ";
 
     @PostConstruct
     protected void init() {
@@ -72,7 +68,7 @@ public class JwtTokenProvider {
                 .compact();
 
         LOGGER.info("[issueToken] Done Generating Token.");
-        return  token;
+        return token;
     }
 
     public Authentication getAuthentication(String token) {
@@ -101,12 +97,12 @@ public class JwtTokenProvider {
 
     }
 
-    public String resolveToken(HttpServletRequest request){
+    public String resolveToken(HttpServletRequest request) {
         LOGGER.info("[resolveToken] HTTP 헤더에서 Token 값 추출");
         String token = request.getHeader(AUTH_KEY);
 
         // check Auth header format
-        if (token == null || token.isEmpty() || !token.startsWith(AUTH_PREFIX)) {
+        if (token == null || !token.startsWith(AUTH_PREFIX)) {
             // jwt exception handler will throw 401
             return null;
         }

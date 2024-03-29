@@ -10,8 +10,6 @@ public interface QuizGroupSolvedDAO {
 
     QuizGroupSolved insertGroupSolved(QuizGroupSolved groupSolved);
 
-    QuizGroupSolved updateGroupSolved(QuizGroupSolved groupSolved);
-
     QuizGroupSolved selectGroupLatestSolved(Long userId);
 
     List<QuizGroupSolved> selectGroupSolved(Long userId);

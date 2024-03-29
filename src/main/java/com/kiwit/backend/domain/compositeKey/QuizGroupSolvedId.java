@@ -10,6 +10,7 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class QuizGroupSolvedId implements Serializable {
 
     @Column(name = "user_id")

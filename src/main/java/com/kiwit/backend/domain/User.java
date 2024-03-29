@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = "id", callSuper = true)
+@EqualsAndHashCode(of = "id", callSuper = false)
 @DynamicInsert
 public class User extends BaseEntity implements UserDetails {
 

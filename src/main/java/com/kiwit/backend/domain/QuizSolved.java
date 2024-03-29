@@ -12,6 +12,7 @@ import org.hibernate.annotations.ColumnDefault;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class QuizSolved extends BaseEntity {
 
     @EmbeddedId

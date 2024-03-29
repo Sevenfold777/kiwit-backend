@@ -6,6 +6,7 @@ import com.kiwit.backend.domain.QuizGroup;
 import com.kiwit.backend.domain.QuizGroupSolved;
 import com.kiwit.backend.repository.QuizGroupSolvedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -24,43 +25,23 @@ public class QuizGroupSolvedDAOImpl implements QuizGroupSolvedDAO {
 
     @Override
     public QuizGroupSolved insertGroupSolved(QuizGroupSolved groupSolved) {
-        try {
-            return quizGroupSolvedRepository.save(groupSolved);
-        } catch (Exception e) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @Override
-    public QuizGroupSolved updateGroupSolved(QuizGroupSolved groupSolved) {
-        return null;
+        return quizGroupSolvedRepository.save(groupSolved);
     }
 
     @Override
     public QuizGroupSolved selectGroupLatestSolved(Long userId) {
-        try {
-            return quizGroupSolvedRepository.findGroupLatestSolved(userId);
-        } catch (Exception e) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
-        }
+        return quizGroupSolvedRepository.findGroupLatestSolved(userId)
+                .orElseThrow(() -> new CustomException(HttpStatus.NO_CONTENT));
+    }
 
-
-    }   @Override
+    @Override
     public List<QuizGroupSolved> selectGroupSolved(Long userId) {
-        try {
-            return quizGroupSolvedRepository.findGroupSolved(userId);
-        } catch (Exception e) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
-        }
+        return quizGroupSolvedRepository.findGroupSolved(userId);
+    }
 
-
-    }   @Override
+    @Override
     public QuizGroupSolved selectGroupSolvedWithGroup(Long userId, Long groupId) {
-        Optional<QuizGroupSolved> quizGroupSolved =quizGroupSolvedRepository.findGroupByUserAndGroup(userId, groupId);
-        if (quizGroupSolved.isEmpty()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
-        }
-
-        return quizGroupSolved.get();
+        return quizGroupSolvedRepository.findGroupByUserAndGroup(userId, groupId)
+                .orElseThrow(() -> new DataAccessException("Cannot find QuizGroupSolved with userId and groupId.") {});
     }
 }

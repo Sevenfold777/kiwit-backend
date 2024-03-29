@@ -1,12 +1,10 @@
 # 🥝 kiwIT Backend
 
----
 
 모두에게 필요한 기초 IT 지식부터 전공자를 위한 CS까지, IT 교육 서비스 kiwIT(키윗)의 백엔드 리포지토리입니다. 개발 중인 프로젝트로 지속적 커밋 예정입니다.
 
 ## 사용 기술
-
---- 
+ 
 
 - Spring Boot
 - Mysql
@@ -17,7 +15,6 @@
 
 ## Architecture
 
----
 
 - 백엔드의 모든 서비스는 AWS를 통해 호스팅
 - Local 개발 환경에서 RDS에 접근 시 SSH Tunneling 적용 (pem key 필요)
@@ -29,7 +26,6 @@
 
 ## ERD
 
----
 
 - v. 240314 
 - Relation Edge는 Many와 One으로만 구분 (Many or none 등 무의미, 수정 예정) 
@@ -38,7 +34,6 @@
 
 ## DB Manual Settings
 
----
 
 ### Index Ordering for Composite Keys
 
@@ -82,8 +77,7 @@ AND updated_at < DATE_SUB(NOW(), INTERVAL 50 DAY);
 ```
 
 ## Auth
-
---- 
+ 
 
 ### 가입 회원 인증 정책 (Mobile SDK 사용)
 - 모바일 SDK가 1~4 단계를 일괄 처리하므로 Kakao에서 kiwIT 서버로 redirect 불가
@@ -117,7 +111,6 @@ AND updated_at < DATE_SUB(NOW(), INTERVAL 50 DAY);
 
 ## ENV
 
----
 
 ❗️애플리케이션 작동을 위한 필수 환경변수 목록입니다. (로컬 개발 환경에 맞게 값 할당) <br/>
 ❗️Docker 이미지 내려 받아 실행 시에도 값을 할당해줘야 작동
@@ -130,7 +123,6 @@ AND updated_at < DATE_SUB(NOW(), INTERVAL 50 DAY);
 
 ## Project Directories
 
----
 
 ```
 gradle/wrapper
@@ -178,7 +170,6 @@ src
 
 ## Dependencies
 
----
 
 ```
 implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -203,7 +194,9 @@ implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_
 
 ## TODO
 
----
 
 - [ ] Pagination
-- [ ] Exception handling 세분화
+- [x] Exception handling 세분화
+- [ ] Test 작성
+- [x] annotation 정리
+- [ ] Logging Exceptions (stack trace)

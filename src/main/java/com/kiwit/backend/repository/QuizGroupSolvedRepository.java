@@ -19,7 +19,7 @@ public interface QuizGroupSolvedRepository extends JpaRepository<QuizGroupSolved
             "where S.id.userId = :userId " +
             "order by S.updatedAt desc " +
             "limit 1")
-    QuizGroupSolved findGroupLatestSolved(@Param("userId") Long userId);
+    Optional<QuizGroupSolved> findGroupLatestSolved(@Param("userId") Long userId);
 
     @Query("select S " +
             "from QuizGroupSolved S " +

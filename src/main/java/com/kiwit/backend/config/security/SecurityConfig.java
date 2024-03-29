@@ -33,6 +33,7 @@ public class SecurityConfig {
 
 
         http.authorizeHttpRequests(authz -> authz
+                .requestMatchers("api/v1/healthCheck").permitAll()
                 .requestMatchers("/api/v1/user/refresh",
                         "/api/v1/user/sign-up",
                         "/api/v1/user/sign-in").permitAll()
@@ -49,13 +50,13 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().requestMatchers("/h2-console/**",
-                "/favicon.ico",
-                "/error",
-                "/swagger-ui/**",
-                "/swagger-resources/**",
-                "/v3/api-docs/**");
-    }
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//        return web -> web.ignoring().requestMatchers("/h2-console/**",
+//                "/favicon.ico",
+//                "/error",
+//                "/swagger-ui/**",
+//                "/swagger-resources/**",
+//                "/v3/api-docs/**");
+//    }
 }

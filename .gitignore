@@ -40,3 +40,4 @@ out/
 Dockerrun.aws.json
 Jenkinsfiles/
 logs/
+.env.*

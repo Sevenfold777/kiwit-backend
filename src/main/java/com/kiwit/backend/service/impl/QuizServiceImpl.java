@@ -1,5 +1,6 @@
 package com.kiwit.backend.service.impl;
 
+import com.kiwit.backend.common.constant.QuizType;
 import com.kiwit.backend.dao.QuizDAO;
 import com.kiwit.backend.dao.QuizGroupDAO;
 import com.kiwit.backend.dao.QuizGroupSolvedDAO;
@@ -81,7 +82,7 @@ public class QuizServiceImpl implements QuizService {
             List<QuizChoiceDTO> quizChoiceDTOList = new ArrayList<>();
 
             // should be changed to enum
-            if (q.getType().equals("multiple")) {
+            if (q.getType().equals(QuizType.MULTIPLE)) {
                 for (QuizChoice choice : q.getChoiceList()) {
                     QuizChoiceDTO quizChoiceDTO
                             = QuizChoiceDTO
@@ -117,6 +118,7 @@ public class QuizServiceImpl implements QuizService {
                 .id(quizGroup.getId())
                 .title(quizGroup.getTitle())
                 .subtitle(quizGroup.getSubtitle())
+                .levelNum(quizGroup.getLevelNum())
                 .totalScore(quizGroup.getTotalScore())
                 .quizList(quizDTOList)
                 .build();

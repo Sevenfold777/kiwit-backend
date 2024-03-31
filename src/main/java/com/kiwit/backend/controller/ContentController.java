@@ -3,6 +3,7 @@ package com.kiwit.backend.controller;
 import com.kiwit.backend.domain.User;
 import com.kiwit.backend.dto.*;
 import com.kiwit.backend.service.ContentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,8 +56,8 @@ public class ContentController {
     public ResponseEntity<ContentStudiedDTO>
     submitExercise(@AuthenticationPrincipal User authUser,
                    @PathVariable Long contentId,
-                   @RequestParam Boolean answer) {
-        ContentStudiedDTO resDto = contentService.submitExercise(authUser, contentId, answer);
+                   @Valid @RequestBody ContentExerciseReqDTO contentExerciseReqDTO) {
+        ContentStudiedDTO resDto = contentService.submitExercise(authUser, contentId, contentExerciseReqDTO);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
@@ -84,8 +85,8 @@ public class ContentController {
     @GetMapping("/kept")
     public ResponseEntity<List<ContentWithStudiedDTO>>
     getContentKept(@AuthenticationPrincipal User authUser,
-                   @RequestParam Integer next,
-                   @RequestParam Integer limit) {
+                   @RequestParam(required = false) Integer next,
+                   @RequestParam(required = false) Integer limit) {
         List<ContentWithStudiedDTO> resDto = contentService.getContentKept(authUser, next, limit);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
@@ -93,8 +94,8 @@ public class ContentController {
     @GetMapping("/studied")
     public ResponseEntity<List<ContentWithStudiedDTO>>
     getContentStudied(@AuthenticationPrincipal User authUser,
-                      @RequestParam Integer next,
-                      @RequestParam Integer limit) {
+                      @RequestParam(required = false) Integer next,
+                      @RequestParam(required = false) Integer limit) {
         List<ContentWithStudiedDTO> resDto = contentService.getContentStudied(authUser, next, limit);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }

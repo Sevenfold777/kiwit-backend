@@ -15,27 +15,28 @@ public class CustomExceptionHandler {
     public ResponseEntity<?> handleKnownException(CustomException e, HttpServletRequest request) {
         // HttpHeaders responseHeaders = new HttpHeaders();
         // TODO: Log Exception
+        System.out.println(e.toString());
         return new ResponseEntity<>(e.getResponseBody(), null, e.getStatusCode());
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<Void> handleValidationException(MethodArgumentNotValidException e, HttpServletRequest request) {
         // TODO: Log Exception
-//        System.out.println(e.toString());
+        System.out.println(e.toString());
         return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = DataAccessException.class)
     public ResponseEntity<Void> handleValidationException(DataAccessException e, HttpServletRequest request) {
         // TODO: Log Exception
-//        System.out.println("SQL EXCCCCC!: " + e.toString());
+        System.out.println("SQL EXCCCCC!: " + e.toString());
         return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<Void> handleUnknownException(Exception e, HttpServletRequest request) {
         // TODO: Log Exception
-//        System.out.println(e.toString());
+        System.out.println(e.toString());
         return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

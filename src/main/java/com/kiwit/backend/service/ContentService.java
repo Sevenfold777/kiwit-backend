@@ -11,7 +11,7 @@ public interface ContentService {
     List<ContentDTO> getLevelContent(Long levelId);
     ContentWithPayloadDTO getContentPayload(Long contentId);
     ContentStudiedDTO studyContent(User user, Long contentId);
-    ContentStudiedDTO submitExercise(User user, Long contentId, Boolean answer);
+    ContentStudiedDTO submitExercise(User user, Long contentId, ContentExerciseReqDTO contentExerciseReqDTO);
     List<CategoryDTO> getCategoryList();
     List<CategoryChapterWithContentDTO> getCategoryChapterWithContent(Long categoryId);
     ContentDTO getContentProgress(User user);

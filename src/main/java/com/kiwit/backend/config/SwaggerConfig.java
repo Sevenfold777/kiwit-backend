@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Profile;
 import java.util.Arrays;
 
 @Configuration
-@Profile({"!prod && dev"})
 public class SwaggerConfig {
 
     @Bean

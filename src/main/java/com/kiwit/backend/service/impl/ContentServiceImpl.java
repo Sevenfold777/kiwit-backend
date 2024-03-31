@@ -136,10 +136,11 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public ContentStudiedDTO submitExercise(User authUser, Long contentId, Boolean answer) {
+    public ContentStudiedDTO submitExercise(User authUser, Long contentId, ContentExerciseReqDTO contentExerciseReqDTO) {
         // TODO
         // handle when content studied exist
         // : unnecessary update occurs for updatedAt
+        Boolean answer = contentExerciseReqDTO.getAnswer();
 
         ContentStudied updatedStudy = contentStudiedDAO.updateContentStudied(authUser.getId(), contentId, answer);
 

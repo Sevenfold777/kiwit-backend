@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface TrophyAwardedDAO {
 
-    List<TrophyAwarded> selectMyTrophyAwarded(Long userId);
+    List<TrophyAwarded> selectMyTrophyAwarded(Long userId, Integer next, Integer limit);
 
     TrophyAwarded selectTrophyAwardedLatest(Long userId);
 }

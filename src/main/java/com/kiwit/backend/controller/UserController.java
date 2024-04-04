@@ -85,8 +85,10 @@ public class UserController {
     @Operation(summary = "My trophy awarded list.", description = "my trophies")
     @GetMapping("/trophy")
     public ResponseEntity<List<TrophyAwardedDTO>>
-    getMyTrophyList(@AuthenticationPrincipal User authUser) {
-        List<TrophyAwardedDTO> resDTO = userService.getMyTrophyList(authUser);
+    getMyTrophyList(@AuthenticationPrincipal User authUser,
+                    @RequestParam(required = false, defaultValue = "0") Integer next,
+                    @RequestParam(required = false, defaultValue = "20") Integer limit) {
+        List<TrophyAwardedDTO> resDTO = userService.getMyTrophyList(authUser, next, limit);
         return ResponseEntity.status(HttpStatus.OK).body(resDTO);
     }
 

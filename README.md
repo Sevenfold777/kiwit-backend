@@ -192,11 +192,12 @@ testImplementation 'org.springframework.security:spring-security-test'
 implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
 ```
 
-## TODO
+## TODOs
 
 
-- [ ] Pagination
+- [x] Pagination
 - [x] Exception handling 세분화
 - [ ] Test 작성
 - [x] annotation 정리
-- [ ] Logging Exceptions (stack trace)
+- [x] Logging Exceptions (stack trace)
+- [ ] Relation Cascade

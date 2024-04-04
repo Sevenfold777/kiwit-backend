@@ -7,6 +7,8 @@ import com.kiwit.backend.domain.QuizGroupSolved;
 import com.kiwit.backend.repository.QuizGroupSolvedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -35,8 +37,9 @@ public class QuizGroupSolvedDAOImpl implements QuizGroupSolvedDAO {
     }
 
     @Override
-    public List<QuizGroupSolved> selectGroupSolved(Long userId) {
-        return quizGroupSolvedRepository.findGroupSolved(userId);
+    public List<QuizGroupSolved> selectGroupSolved(Long userId, Integer next, Integer limit) {
+        Pageable pageable = PageRequest.of(next, limit);
+        return quizGroupSolvedRepository.findGroupSolved(userId, pageable);
     }
 
     @Override

@@ -17,4 +17,9 @@ public class QuizDAOImpl implements QuizDAO {
     public QuizDAOImpl(QuizRepository quizRepository) {
         this.quizRepository = quizRepository;
     }
+
+    @Override
+    public List<Quiz> findQuizWithChoiceByGroupId(Long groupId) {
+        return quizRepository.findQuizWithChoiceByGroupId(groupId);
+    }
 }

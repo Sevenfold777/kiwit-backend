@@ -54,9 +54,6 @@ public class User extends BaseEntity implements UserDetails {
     @PrimaryKeyJoinColumn
     private UserInfo userInfo;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, optional = false)
-    private Progress progress;
-
     @OneToMany(mappedBy = "user")
     @PrimaryKeyJoinColumn
     @ToString.Exclude

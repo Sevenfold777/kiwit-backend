@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface QuizService {
 
-    List<QuizGroupDTO> getQuizGroup();
+    List<QuizGroupDTO> getQuizGroup(Integer next, Integer limit);
     QuizGroupWithQuizDTO solveQuizGroup(Long groupId);
     QuizGroupSolvedDTO submitAnswers(User user, Long quizId, QuizAnswerListDTO quizAnswerListDTO);
     QuizGroupSolvedDTO resubmitAnswers(User user, Long quizId, QuizAnswerListDTO quizAnswerListDTO);

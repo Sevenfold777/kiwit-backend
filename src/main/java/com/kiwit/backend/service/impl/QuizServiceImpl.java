@@ -40,8 +40,8 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    public List<QuizGroupDTO> getQuizGroup() {
-        List<QuizGroup> quizGroupList = quizGroupDAO.selectGroupList();
+    public List<QuizGroupDTO> getQuizGroup(Integer next, Integer limit) {
+        List<QuizGroup> quizGroupList = quizGroupDAO.selectGroupList(next, limit);
 
         List<QuizGroupDTO> quizGroupListDTO = new ArrayList<>();
         for (QuizGroup g : quizGroupList) {
@@ -73,11 +73,13 @@ public class QuizServiceImpl implements QuizService {
     @Transactional
     @Override
     public QuizGroupWithQuizDTO solveQuizGroup(Long groupId) {
-        QuizGroup quizGroup = quizGroupDAO.selectGroupWithQuiz(groupId);
+//        QuizGroup quizGroup = quizGroupDAO.selectGroupWithQuiz(groupId);
+        QuizGroup quizGroup = quizGroupDAO.selectGroup(groupId);
+        List<Quiz> quizList = quizDAO.findQuizWithChoiceByGroupId(groupId);
 
         List<QuizDTO> quizDTOList = new ArrayList<>();
 
-        for (Quiz q : quizGroup.getQuizList()) {
+        for (Quiz q : quizList) {
 
             List<QuizChoiceDTO> quizChoiceDTOList = new ArrayList<>();
 
@@ -284,7 +286,7 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public List<QuizGroupWithSolvedDTO> getQuizGroupSolved(User authUser, Integer next, Integer limit) {
 
-        List<QuizGroupSolved> quizGroupSolvedList = quizGroupSolvedDAO.selectGroupSolved(authUser.getId());
+        List<QuizGroupSolved> quizGroupSolvedList = quizGroupSolvedDAO.selectGroupSolved(authUser.getId(), next, limit);
 
         List<QuizGroupWithSolvedDTO> quizGroupWithSolvedDTOList = new ArrayList<>();
         for (QuizGroupSolved g : quizGroupSolvedList) {
@@ -316,7 +318,7 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public List<QuizWithSolvedDTO> getQuizKept(User authUser, Integer next, Integer limit) {
-        List<QuizSolved> quizSolvedList = quizSolvedDAO.selectQuizKept(authUser.getId());
+        List<QuizSolved> quizSolvedList = quizSolvedDAO.selectQuizKept(authUser.getId(), next, limit);
 
         List<QuizWithSolvedDTO> quizSolvedListDTO = new ArrayList<>();
         for (QuizSolved q : quizSolvedList) {

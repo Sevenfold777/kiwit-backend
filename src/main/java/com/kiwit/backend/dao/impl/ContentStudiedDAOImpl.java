@@ -7,6 +7,8 @@ import com.kiwit.backend.repository.ContentStudiedRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -49,11 +51,13 @@ public class ContentStudiedDAOImpl implements ContentStudiedDAO {
 
     @Override
     public List<ContentStudied> selectContentListKept(Long userId, Integer next, Integer limit) {
-        return contentStudiedRepository.findContentKept(userId);
+        Pageable pageable = PageRequest.of(next, limit);
+        return contentStudiedRepository.findContentKept(userId, pageable);
     }
 
     @Override
     public List<ContentStudied> selectContentListStudied(Long userId, Integer next, Integer limit) {
-        return contentStudiedRepository.findContentStudied(userId);
+        Pageable pageable = PageRequest.of(next, limit);
+        return contentStudiedRepository.findContentStudied(userId, pageable);
     }
 }

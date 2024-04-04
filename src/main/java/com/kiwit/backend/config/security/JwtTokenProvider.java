@@ -44,14 +44,11 @@ public class JwtTokenProvider {
 
     @PostConstruct
     protected void init() {
-        LOGGER.info("[init] JwtTokenProvider 내 secretKey 초기화 시작");
         // encode JWT in Base64 format
         SECRET_KEY = Keys.hmacShaKeyFor(SECRET_KEY_RAW.getBytes());
-        LOGGER.info("[init] JwtTokenProvider 내 secretKey 초기화 완료");
     }
 
     public String issueToken(Long id, Boolean isRefreshToken) {
-        LOGGER.info("[issueToken] Start Generating Token.");
 
         Claims claims = Jwts.claims().setSubject(id.toString());
         claims.put("roles", "USER");
@@ -67,24 +64,18 @@ public class JwtTokenProvider {
                 .signWith(SECRET_KEY)
                 .compact();
 
-        LOGGER.info("[issueToken] Done Generating Token.");
         return token;
     }
 
     public Authentication getAuthentication(String token) {
-        LOGGER.info("[getAuthentication] 토큰 인증 정보 조회 시작");
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserId(token).toString());
 
-        LOGGER.info("[getAuthentication] 토큰 인증 정보 조회 완료, UserDetails UserName : {}",
-                this.getUserId(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "",
                 userDetails.getAuthorities());
     }
 
     public Long getUserId(String token) {
-
-        LOGGER.info("[getUserId] 토큰 기반 회원 구별 정보 추출");
 
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY)
@@ -92,13 +83,10 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        LOGGER.info("[getUserId] 토큰 기반 회원 구별 정보 추출 완료, info");
         return Long.parseLong(claims.getSubject());
-
     }
 
     public String resolveToken(HttpServletRequest request) {
-        LOGGER.info("[resolveToken] HTTP 헤더에서 Token 값 추출");
         String token = request.getHeader(AUTH_KEY);
 
         // check Auth header format
@@ -112,7 +100,6 @@ public class JwtTokenProvider {
 
 
     public Boolean validateToken(String token) {
-        LOGGER.info("[validateToken] 토큰 유효 체크 시작");
 
         try {
             Jws<Claims> claims = Jwts.parserBuilder()
@@ -120,12 +107,8 @@ public class JwtTokenProvider {
                     .build()
                     .parseClaimsJws(token);
 
-            LOGGER.info("[validateToken] 토큰 유효 체크 완료");
-
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
-
-            LOGGER.info("[validateToken] 토큰 유효 체크 예외 발생");
             return false;
         }
     }

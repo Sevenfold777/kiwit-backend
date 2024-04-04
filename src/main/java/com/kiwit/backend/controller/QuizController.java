@@ -25,10 +25,10 @@ public class QuizController {
 
     @GetMapping("/group")
     public ResponseEntity<List<QuizGroupDTO>>
-    getQuizGroup(@RequestParam(required = false) Integer next,
-                 @RequestParam(required = false) Integer limit,
+    getQuizGroup(@RequestParam(required = false, defaultValue = "0") Integer next,
+                 @RequestParam(required = false, defaultValue = "20") Integer limit,
                  @RequestParam(required = false) String tag) {
-        List<QuizGroupDTO> resDto = quizService.getQuizGroup();
+        List<QuizGroupDTO> resDto = quizService.getQuizGroup(next, limit);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
@@ -67,8 +67,8 @@ public class QuizController {
     @GetMapping("/kept")
     public ResponseEntity<List<QuizWithSolvedDTO>>
     getQuizKept(@AuthenticationPrincipal User authUser,
-                @RequestParam(required = false) Integer next,
-                @RequestParam(required = false) Integer limit) {
+                @RequestParam(required = false, defaultValue = "0") Integer next,
+                @RequestParam(required = false, defaultValue = "20") Integer limit) {
         List<QuizWithSolvedDTO> resDto = quizService.getQuizKept(authUser, next, limit);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
@@ -76,8 +76,8 @@ public class QuizController {
     @GetMapping("/group/solved")
     public ResponseEntity<List<QuizGroupWithSolvedDTO>>
     getQuizSolved(@AuthenticationPrincipal User authUser,
-                  @RequestParam(required = false) Integer next,
-                  @RequestParam(required = false) Integer limit) {
+                  @RequestParam(required = false, defaultValue = "0") Integer next,
+                  @RequestParam(required = false, defaultValue = "20") Integer limit) {
         List<QuizGroupWithSolvedDTO> resDto = quizService.getQuizGroupSolved(authUser, next, limit);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }

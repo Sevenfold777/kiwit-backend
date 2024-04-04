@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface QuizGroupDAO {
 
-    List<QuizGroup> selectGroupList();
+    List<QuizGroup> selectGroupList(Integer next, Integer limit);
 
     QuizGroup selectGroupWithQuiz(Long groupId);
 

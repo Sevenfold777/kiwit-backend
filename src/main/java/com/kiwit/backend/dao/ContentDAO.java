@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface ContentDAO {
 
-    List<Content> selectContentListWithLevel(Long levelId);
+    List<Content> selectContentListWithLevel(Long levelId, Integer next, Integer limit);
 
     Content selectContentWithPayload(Long contentId);
 
-    Content selectNextContent(Long userId);
+    Content selectStudiedLatest(Long userId);
 }

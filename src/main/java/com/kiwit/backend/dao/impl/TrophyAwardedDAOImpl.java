@@ -5,6 +5,8 @@ import com.kiwit.backend.dao.TrophyAwardedDAO;
 import com.kiwit.backend.domain.TrophyAwarded;
 import com.kiwit.backend.repository.TrophyAwardedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +23,9 @@ public class TrophyAwardedDAOImpl implements TrophyAwardedDAO {
     }
 
     @Override
-    public List<TrophyAwarded> selectMyTrophyAwarded(Long userId) {
-        return trophyAwardedRepository.findTrophyAwarded(userId);
+    public List<TrophyAwarded> selectMyTrophyAwarded(Long userId, Integer next, Integer limit) {
+        Pageable pageable = PageRequest.of(next, limit);
+        return trophyAwardedRepository.findTrophyAwarded(userId, pageable);
     }
 
     @Override

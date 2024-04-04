@@ -14,7 +14,7 @@ public interface UserService {
     UserDTO myInfo(User user);
     UserDTO editUser(User user, EditUserReqDTO userDTO);
     void withdrawUser(User user);
-    List<TrophyAwardedDTO> getMyTrophyList(User user);
+    List<TrophyAwardedDTO> getMyTrophyList(User user, Integer next, Integer limit);
     TrophyAwardedDTO getMyTrophyLatest(User user);
     StatDTO getMyStat(User user);
 }

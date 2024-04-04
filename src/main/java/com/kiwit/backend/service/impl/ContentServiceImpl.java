@@ -20,21 +20,18 @@ public class ContentServiceImpl implements ContentService {
     private final ContentStudiedDAO contentStudiedDAO;
     private final CategoryDAO categoryDAO;
     private final CategoryChapterDAO categoryChapterDAO;
-    private final ProgressDAO progressDAO;
 
     @Autowired
     public ContentServiceImpl(ContentDAO contentDAO,
                               LevelDAO levelDAO,
                               ContentStudiedDAO contentStudiedDAO,
                               CategoryDAO categoryDAO,
-                              CategoryChapterDAO categoryChapterDAO,
-                              ProgressDAO progressDAO) {
+                              CategoryChapterDAO categoryChapterDAO) {
         this.contentDAO = contentDAO;
         this.levelDAO = levelDAO;
         this.contentStudiedDAO = contentStudiedDAO;
         this.categoryDAO = categoryDAO;
         this.categoryChapterDAO = categoryChapterDAO;
-        this.progressDAO = progressDAO;
     }
 
     @Override
@@ -51,8 +48,8 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public List<ContentDTO> getLevelContent(Long levelId) {
-        List<Content> contentList = contentDAO.selectContentListWithLevel(levelId);
+    public List<ContentDTO> getLevelContent(Long levelId, Integer next, Integer limit) {
+        List<Content> contentList = contentDAO.selectContentListWithLevel(levelId, next, limit);
         List<ContentDTO> contentDTOList = new ArrayList<>();
 
         for (Content c: contentList) {
@@ -121,15 +118,11 @@ public class ContentServiceImpl implements ContentService {
                 .userId(savedStudy.getId().getUserId())
                 .contentId(savedStudy.getId().getContentId())
                 .myAnswer(savedStudy.getMyAnswer())
-                .kept(savedStudy.getKept()) // false --> savedStudy.getKept can be?
+                .kept(savedStudy.getKept())
                 .createdAt(savedStudy.getCreatedAt())
                 .updatedAt(savedStudy.getUpdatedAt())
                 .build();
 
-        Progress progress = progressDAO.selectProgressWithUser(authUser.getId());
-        if (progress.getContentId() < contentId) {
-            progress.setContent(savedStudy.getContent());
-        }
 
         return contentStudiedDTO;
 
@@ -215,11 +208,11 @@ public class ContentServiceImpl implements ContentService {
 
     }
     @Override
-    public ContentDTO getContentProgress(User authUser) {
+    public ContentDTO getContentStudiedLatest(User authUser) {
         // TODO
         // handle when there's no more content left
         // decide rule for content Id
-        Content content = contentDAO.selectNextContent(authUser.getId());
+        Content content = contentDAO.selectStudiedLatest(authUser.getId());
 
         ContentDTO contentDTO
                 = ContentDTO

@@ -14,8 +14,6 @@ import java.io.IOException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-
     private final JwtTokenProvider jwtTokenProvider;
 
     public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
@@ -28,13 +26,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String token = jwtTokenProvider.resolveToken(servletRequest);
-        LOGGER.info("[doFilterInternal] token 값 추출 완료");
 
-        LOGGER.info("[doFilterInternal] token 값 유효성 체크 시작");
         if (token != null && jwtTokenProvider.validateToken(token)) {
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            LOGGER.info("[doFilterInternal] token 값 유효성 체크 완료");
         }
 
         filterChain.doFilter(servletRequest, servletResponse);

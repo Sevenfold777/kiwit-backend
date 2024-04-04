@@ -1,26 +1,21 @@
 package com.kiwit.backend.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kiwit.backend.common.constant.Provider;
 import com.kiwit.backend.common.constant.Status;
 import com.kiwit.backend.common.exception.CustomException;
 import com.kiwit.backend.config.security.JwtTokenProvider;
-import com.kiwit.backend.dao.ProgressDAO;
 import com.kiwit.backend.dao.TrophyAwardedDAO;
 import com.kiwit.backend.dao.UserDAO;
 import com.kiwit.backend.dao.UserInfoDAO;
 import com.kiwit.backend.domain.*;
 import com.kiwit.backend.dto.*;
-import com.kiwit.backend.repository.UserRepository;
 import com.kiwit.backend.service.KakaoAuthService;
 import com.kiwit.backend.service.UserService;
 import jakarta.transaction.Transactional;
-import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +25,6 @@ public class UserServiceImpl implements UserService {
 
     UserDAO userDAO;
     UserInfoDAO userInfoDAO;
-    ProgressDAO progressDAO;
     TrophyAwardedDAO trophyAwardedDAO;
     JwtTokenProvider jwtTokenProvider;
     KakaoAuthService kakaoAuthService;
@@ -38,13 +32,11 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public UserServiceImpl(UserDAO userDAO,
                            UserInfoDAO userInfoDAO,
-                           ProgressDAO progressDAO,
                            TrophyAwardedDAO trophyAwardedDAO,
                            JwtTokenProvider jwtTokenProvider,
                            KakaoAuthService kakaoAuthService) {
         this.userDAO = userDAO;
         this.userInfoDAO = userInfoDAO;
-        this.progressDAO = progressDAO;
         this.trophyAwardedDAO = trophyAwardedDAO;
         this.jwtTokenProvider = jwtTokenProvider;
         this.kakaoAuthService = kakaoAuthService;
@@ -53,14 +45,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public SignInResDTO signUp(SignUpReqDTO signUpReqDTO) {
-        Long INIT_CONTENT = 1L;
 
         // set user with request body
         User user = new User(signUpReqDTO.getEmail(), signUpReqDTO.getNickname());
-
-        // set progress with existing content id: 1 (initial content)
-        Progress progress = new Progress(user);
-        progress.setContent(new Content(INIT_CONTENT));
 
         // set user info
         UserInfo userInfo = UserInfo
@@ -70,7 +57,6 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         UserInfo savedUserInfo = userInfoDAO.insertUserInfo(userInfo);
-        Progress savedProgress = progressDAO.insertProgress(progress);
 
         // issue token with id
         String accessToken = jwtTokenProvider.issueToken(savedUserInfo.getId(), false);
@@ -214,10 +200,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<TrophyAwardedDTO> getMyTrophyList(User user) {
+    public List<TrophyAwardedDTO> getMyTrophyList(User user, Integer next, Integer limit) {
 
         List<TrophyAwarded> trophyAwardedList
-                = trophyAwardedDAO.selectMyTrophyAwarded(user.getId());
+                = trophyAwardedDAO.selectMyTrophyAwarded(user.getId(), next, limit);
 
         List<TrophyAwardedDTO> trophyAwardedDTOList = new ArrayList<>();
 

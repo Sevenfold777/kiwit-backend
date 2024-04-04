@@ -12,7 +12,7 @@ public interface QuizGroupSolvedDAO {
 
     QuizGroupSolved selectGroupLatestSolved(Long userId);
 
-    List<QuizGroupSolved> selectGroupSolved(Long userId);
+    List<QuizGroupSolved> selectGroupSolved(Long userId, Integer next, Integer limit);
 
     QuizGroupSolved selectGroupSolvedWithGroup(Long userId, Long groupId);
 }

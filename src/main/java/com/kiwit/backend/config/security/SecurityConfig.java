@@ -52,13 +52,4 @@ public class SecurityConfig {
         return http.build();
     }
 
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return web -> web.ignoring().requestMatchers("/h2-console/**",
-//                "/favicon.ico",
-//                "/error",
-//                "/swagger-ui/**",
-//                "/swagger-resources/**",
-//                "/v3/api-docs/**");
-//    }
 }

@@ -12,7 +12,7 @@ public interface QuizSolvedDAO {
 
     QuizSolved keepQuiz(Long userId, Long quizId);
 
-    List<QuizSolved> selectQuizKept(Long userId);
+    List<QuizSolved> selectQuizKept(Long userId, Integer next, Integer limit);
 
     List<QuizSolved> selectQuizSolved(Long userId);
 

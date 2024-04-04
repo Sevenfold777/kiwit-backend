@@ -2,6 +2,7 @@ package com.kiwit.backend.repository;
 
 import com.kiwit.backend.domain.TrophyAwarded;
 import com.kiwit.backend.domain.compositeKey.TrophyAwardedId;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,7 +17,7 @@ public interface TrophyAwardedRepository extends JpaRepository<TrophyAwarded, Tr
             "join fetch A.trophy " +
             "where A.id.userId = :userId " +
             "order by A.updatedAt desc")
-    List<TrophyAwarded> findTrophyAwarded(@Param("userId") Long userId);
+    List<TrophyAwarded> findTrophyAwarded(@Param("userId") Long userId, Pageable pageable);
 
     @Query("select A " +
             "from TrophyAwarded A " +

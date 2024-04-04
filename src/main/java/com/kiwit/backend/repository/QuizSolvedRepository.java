@@ -2,6 +2,7 @@ package com.kiwit.backend.repository;
 
 import com.kiwit.backend.domain.QuizSolved;
 import com.kiwit.backend.domain.compositeKey.QuizSolvedId;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,8 +15,9 @@ public interface QuizSolvedRepository extends JpaRepository<QuizSolved, QuizSolv
             "from QuizSolved S " +
             "join fetch S.quiz " +
             "where S.id.userId = :userId " +
-            "and S.kept = true")
-    List<QuizSolved> findQuizKept(@Param("userId") Long userId);
+            "and S.kept = true " +
+            "order by S.updatedAt desc")
+    List<QuizSolved> findQuizKept(@Param("userId") Long userId, Pageable pageable);
 
     @Query("select S " +
             "from QuizSolved S " +

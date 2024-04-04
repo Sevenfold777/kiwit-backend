@@ -32,8 +32,10 @@ public class ContentController {
 
     @GetMapping("/level/{levelId}")
     public ResponseEntity<List<ContentDTO>>
-    getLevelContent(@PathVariable Long levelId) {
-        List<ContentDTO> resDto = contentService.getLevelContent(levelId);
+    getLevelContent(@PathVariable Long levelId,
+                    @RequestParam(required = false, defaultValue = "0") Integer next,
+                    @RequestParam(required = false, defaultValue = "20") Integer limit) {
+        List<ContentDTO> resDto = contentService.getLevelContent(levelId, next, limit);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
@@ -75,18 +77,18 @@ public class ContentController {
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
-    @GetMapping("/progress")
+    @GetMapping("/latest")
     public ResponseEntity<ContentDTO>
-    getContentProgress(@AuthenticationPrincipal User authUser) {
-        ContentDTO resDto = contentService.getContentProgress(authUser);
+    getContentStudiedLatest(@AuthenticationPrincipal User authUser) {
+        ContentDTO resDto = contentService.getContentStudiedLatest(authUser);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
     @GetMapping("/kept")
     public ResponseEntity<List<ContentWithStudiedDTO>>
     getContentKept(@AuthenticationPrincipal User authUser,
-                   @RequestParam(required = false) Integer next,
-                   @RequestParam(required = false) Integer limit) {
+                   @RequestParam(required = false, defaultValue = "0") Integer next,
+                   @RequestParam(required = false, defaultValue = "20") Integer limit) {
         List<ContentWithStudiedDTO> resDto = contentService.getContentKept(authUser, next, limit);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
@@ -94,8 +96,8 @@ public class ContentController {
     @GetMapping("/studied")
     public ResponseEntity<List<ContentWithStudiedDTO>>
     getContentStudied(@AuthenticationPrincipal User authUser,
-                      @RequestParam(required = false) Integer next,
-                      @RequestParam(required = false) Integer limit) {
+                      @RequestParam(required = false, defaultValue = "0") Integer next,
+                      @RequestParam(required = false, defaultValue = "20") Integer limit) {
         List<ContentWithStudiedDTO> resDto = contentService.getContentStudied(authUser, next, limit);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }

@@ -1,13 +1,11 @@
 package com.kiwit.backend.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kiwit.backend.common.constant.Plan;
 import com.kiwit.backend.common.constant.Status;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "user")
@@ -51,16 +48,13 @@ public class User extends BaseEntity implements UserDetails {
     private Status status;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, optional = false)
-    @PrimaryKeyJoinColumn
     private UserInfo userInfo;
 
     @OneToMany(mappedBy = "user")
-    @PrimaryKeyJoinColumn
     @ToString.Exclude
     private List<QuizSolved> quizSolvedList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    @PrimaryKeyJoinColumn
     @ToString.Exclude
     private List<ContentStudied> contentStudiedList = new ArrayList<>();
 

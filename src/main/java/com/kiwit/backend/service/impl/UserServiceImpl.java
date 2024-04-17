@@ -81,6 +81,7 @@ public class UserServiceImpl implements UserService {
             case KAKAO -> {
                 authResult = kakaoAuthService.getUserProfile(signInReqDTO.getToken());
             }
+            // case APPLE 추가 예정
             default -> {
                 throw new CustomException(HttpStatus.BAD_REQUEST);
             }

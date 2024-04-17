@@ -41,11 +41,9 @@ public class Content extends BaseEntity {
     private Level level;
 
     @OneToMany(mappedBy = "content")
-    @PrimaryKeyJoinColumn
     private List<ContentPayload> payloadList = new ArrayList<>();
 
     @OneToMany(mappedBy = "content")
-    @PrimaryKeyJoinColumn
     private List<ContentStudied> contentStudiedList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

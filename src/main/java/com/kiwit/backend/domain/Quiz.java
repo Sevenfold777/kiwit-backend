@@ -42,7 +42,6 @@ public class Quiz extends BaseEntity {
     private List<QuizChoice> choiceList = new ArrayList<>();
 
     @OneToMany(mappedBy = "quiz")
-    @PrimaryKeyJoinColumn
     private List<QuizSolved> quizSolvedList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

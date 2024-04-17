@@ -1,6 +1,5 @@
 package com.kiwit.backend.domain.compositeKey;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
@@ -13,9 +12,9 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class QuizGroupSolvedId implements Serializable {
 
-    @Column(name = "user_id")
+//    @Column(name = "user_id") // MapsId로 매핑 됨
     private Long userId;
 
-    @Column(name = "quiz_group_id")
+//    @Column(name = "quiz_group_id")
     private Long quizGroupId;
 }

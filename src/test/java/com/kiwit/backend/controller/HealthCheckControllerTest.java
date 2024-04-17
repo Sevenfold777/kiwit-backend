@@ -11,10 +11,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(value = HealthCheckController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
+@DisplayName("Test: [Controller] /api/v1/healthCheck")
 public class HealthCheckControllerTest {
 
     @Autowired
-    private  MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @Test
     @DisplayName("Test Health Check - Response 200")

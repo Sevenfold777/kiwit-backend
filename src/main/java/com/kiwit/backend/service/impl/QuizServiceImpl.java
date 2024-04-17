@@ -13,9 +13,7 @@ import com.kiwit.backend.service.QuizService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -84,7 +82,7 @@ public class QuizServiceImpl implements QuizService {
             List<QuizChoiceDTO> quizChoiceDTOList = new ArrayList<>();
 
             // should be changed to enum
-            if (q.getType().equals(QuizType.MULTIPLE)) {
+            if (q.getType() == QuizType.MULTIPLE) {
                 for (QuizChoice choice : q.getChoiceList()) {
                     QuizChoiceDTO quizChoiceDTO
                             = QuizChoiceDTO

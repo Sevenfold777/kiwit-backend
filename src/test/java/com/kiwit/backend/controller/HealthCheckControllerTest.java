@@ -18,7 +18,7 @@ public class HealthCheckControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("Test Health Check - Response 200")
+    @DisplayName("Health Check - Response 200")
     public void testHealthCheckResponse() throws Exception {
         mockMvc.perform(get("/api/v1/healthCheck"))
                 .andExpect(status().isOk());

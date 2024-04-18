@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +24,7 @@ import java.util.List;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id", callSuper = false)
 @DynamicInsert
+@DynamicUpdate
 public class User extends BaseEntity implements UserDetails {
 
     @Id
@@ -37,25 +39,25 @@ public class User extends BaseEntity implements UserDetails {
 
     @Column(nullable = false)
     @ColumnDefault("0")
-    private Integer point;
+    private Integer point = 0;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Plan plan;
+    @ColumnDefault("'NORMAL'")
+    private Plan plan = Plan.NORMAL;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status;
+    @ColumnDefault("'ACTIVATED'")
+    private Status status = Status.ACTIVATED;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, optional = false)
     private UserInfo userInfo;
 
     @OneToMany(mappedBy = "user")
-    @ToString.Exclude
     private List<QuizSolved> quizSolvedList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    @ToString.Exclude
     private List<ContentStudied> contentStudiedList = new ArrayList<>();
 
 

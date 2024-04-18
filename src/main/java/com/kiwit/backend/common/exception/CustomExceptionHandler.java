@@ -47,6 +47,7 @@ public class CustomExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<Void> handleUnknownException(Exception e, HttpServletRequest request) {
         // TODO: Log Exception
+        e.printStackTrace();
         log.error(HttpStatus.INTERNAL_SERVER_ERROR.toString() + " " + e);
         return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -11,7 +11,7 @@ public interface UserService {
     SignInResDTO signIn(SignInReqDTO signInReqDTO);
     void signOut(User user);
     SignInResDTO refreshToken(RefreshTokenDTO refreshTokenDTO);
-    UserDTO myInfo(User user);
+    UserDTO myProfile(User user);
     UserDTO editUser(User user, EditUserReqDTO userDTO);
     void withdrawUser(User user);
     List<TrophyAwardedDTO> getMyTrophyList(User user, Integer next, Integer limit);

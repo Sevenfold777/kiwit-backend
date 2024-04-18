@@ -66,7 +66,6 @@ public class UserServiceImpl implements UserService {
 
         // save jwt refresh token in UserInfo (for JWT Refresh Token Rotation)
         savedUserInfo.setJwtRefreshToken(refreshToken);
-        userInfoDAO.updateRefreshToken(savedUserInfo);
 
         return signInResDTO;
     }
@@ -151,7 +150,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO myInfo(User user) {
+    public UserDTO myProfile(User user) {
 
         User me = userDAO.selectUser(user.getId());
 

@@ -18,7 +18,7 @@ import org.springframework.data.domain.Persistable;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @DynamicInsert
 @DynamicUpdate
-public class ContentStudied extends BaseEntity {
+public class ContentStudied extends BaseEntity implements Persistable<ContentStudiedId> {
 
     @EmbeddedId
     private ContentStudiedId id;
@@ -40,4 +40,14 @@ public class ContentStudied extends BaseEntity {
     @MapsId("contentId")
     @JoinColumn(name = "content_id")
     private Content content;
+
+    @Override
+    public boolean isNew() {
+        return this.getCreatedAt() == null;
+    }
+
+    @Override
+    public ContentStudiedId getId() {
+        return this.id;
+    }
 }

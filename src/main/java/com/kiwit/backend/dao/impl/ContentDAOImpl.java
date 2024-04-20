@@ -41,6 +41,6 @@ public class ContentDAOImpl implements ContentDAO {
 
     @Override
     public Content getContentProxy(Long contentId) {
-        return contentRepository.getOne(contentId);
+        return contentRepository.getReferenceById(contentId);
     }
 }

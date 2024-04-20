@@ -42,6 +42,6 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User getUserProxy(Long userId) {
-        return userRepository.getOne(userId);
+        return userRepository.getReferenceById(userId);
     }
 }

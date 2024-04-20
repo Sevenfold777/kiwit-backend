@@ -105,10 +105,13 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public ContentStudiedDTO studiedContent(User authUser, Long contentId) {
 
+        User userProxy = userDAO.getUserProxy(authUser.getId());
+        Content contentProxy = contentDAO.getContentProxy(contentId);
+
         ContentStudied contentStudied = ContentStudied.builder()
                 .id(new ContentStudiedId(authUser.getId(), contentId))
-                .user(new User(authUser.getId()))
-                .content(new Content(contentId))
+                .user(userProxy)
+                .content(contentProxy)
                 .kept(false)
                 .build();
 
@@ -130,9 +133,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public ContentStudiedDTO submitExercise(User authUser, Long contentId, ContentExerciseReqDTO contentExerciseReqDTO) {
-        // TODO
-        // handle when content studied exist
-        // : unnecessary update occurs for updatedAt
+
         Boolean answer = contentExerciseReqDTO.getAnswer();
 
         ContentStudied updatedStudy = contentStudiedDAO.updateExerciseAnswer(authUser.getId(), contentId, answer);

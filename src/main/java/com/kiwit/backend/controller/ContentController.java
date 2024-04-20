@@ -50,7 +50,7 @@ public class ContentController {
     public ResponseEntity<ContentStudiedDTO>
     studyContent(@AuthenticationPrincipal User authUser,
                  @PathVariable Long contentId) {
-        ContentStudiedDTO resDto = contentService.studyContent(authUser, contentId);
+        ContentStudiedDTO resDto = contentService.studiedContent(authUser, contentId);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 

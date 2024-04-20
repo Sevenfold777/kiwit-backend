@@ -1,15 +1,14 @@
 package com.kiwit.backend.dao;
 
-import com.kiwit.backend.domain.Content;
 import com.kiwit.backend.domain.ContentStudied;
 
 import java.util.List;
 
 public interface ContentStudiedDAO {
 
-    ContentStudied insertContentStudied(ContentStudied contentStudied);
+    ContentStudied saveContentStudied(ContentStudied contentStudied);
 
-    ContentStudied updateContentStudied(Long userId, Long contentId, Boolean answer);
+    ContentStudied updateExerciseAnswer(Long userId, Long contentId, Boolean answer);
 
     ContentStudied keepContent(Long userId, Long contentId);
 

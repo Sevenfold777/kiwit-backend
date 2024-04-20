@@ -10,4 +10,5 @@ public interface UserDAO {
     User selectUserWithInfo(Long userId);
     User selectUserWithEmail(String email);
 
+    User getUserProxy(Long userId);
 }

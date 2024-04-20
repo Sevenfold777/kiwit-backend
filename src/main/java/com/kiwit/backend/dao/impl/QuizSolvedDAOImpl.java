@@ -28,12 +28,7 @@ public class QuizSolvedDAOImpl implements QuizSolvedDAO {
     }
 
     @Override
-    public List<QuizSolved> insertQuizSolvedList(List<QuizSolved> quizSolvedList) {
-        return this.quizSolvedRepository.saveAll(quizSolvedList);
-    }
-
-    @Override
-    public List<QuizSolved> updateQuizSolvedList(List<QuizSolved> quizSolvedList) {
+    public List<QuizSolved> saveQuizSolvedList(List<QuizSolved> quizSolvedList) {
         return this.quizSolvedRepository.saveAll(quizSolvedList);
     }
 

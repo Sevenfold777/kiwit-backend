@@ -173,7 +173,7 @@ public class QuizServiceImpl implements QuizService {
         }
 
         // 2. save quiz answers
-        List<QuizSolved> savedQuizSolved = quizSolvedDAO.insertQuizSolvedList(quizSolvedList);
+        List<QuizSolved> savedQuizSolved = quizSolvedDAO.saveQuizSolvedList(quizSolvedList);
 
         QuizGroupSolved quizGroupSolved
                 = QuizGroupSolved
@@ -186,7 +186,7 @@ public class QuizServiceImpl implements QuizService {
                 .build();
 
         // 3. save group solved result with calculated scores
-        QuizGroupSolved savedQuizGroupSolved = quizGroupSolvedDAO.insertGroupSolved(quizGroupSolved);
+        QuizGroupSolved savedQuizGroupSolved = quizGroupSolvedDAO.saveGroupSolved(quizGroupSolved);
 
         // 4. Generate Response DTO
         QuizGroupSolvedDTO quizGroupSolvedDTO

@@ -33,18 +33,35 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("UserService Test")
 class UserServiceImplTest {
 
-    @Autowired UserService userService;
-    @Autowired UserRepository userRepository;
-    @Autowired UserInfoRepository userInfoRepository;
-    @Autowired TrophyRepository trophyRepository;
-    @Autowired TrophyAwardedRepository trophyAwardedRepository;
-    @Autowired JwtTokenProvider jwtTokenProvider;
+    UserService userService;
+    UserRepository userRepository;
+    UserInfoRepository userInfoRepository;
+    TrophyRepository trophyRepository;
+    TrophyAwardedRepository trophyAwardedRepository;
+    JwtTokenProvider jwtTokenProvider;
+    ServiceTestHelper serviceTestHelper;
+
+    @Autowired
+    UserServiceImplTest(UserService userService,
+                        UserRepository userRepository,
+                        UserInfoRepository userInfoRepository,
+                        TrophyRepository trophyRepository,
+                        TrophyAwardedRepository trophyAwardedRepository,
+                        JwtTokenProvider jwtTokenProvider) {
+        this.userService = userService;
+        this.userRepository = userRepository;
+        this.userInfoRepository = userInfoRepository;
+        this.trophyRepository = trophyRepository;
+        this.trophyAwardedRepository = trophyAwardedRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
+
+        this.serviceTestHelper = new ServiceTestHelper(
+                userService, jwtTokenProvider, trophyRepository, trophyAwardedRepository
+        );
+    }
 
     @PersistenceContext
     EntityManager em;
-
-    private final String trophyName1 = "첫 번째 트로피";
-    private final String trophyName2 = "두 번째 트로피";
 
     @Test
     @DisplayName("회원가입 성공")
@@ -119,7 +136,7 @@ class UserServiceImplTest {
     public void signOutSuccessTest() throws Exception {
 
         // Given
-        Long userId = this.getNewUserId();
+        Long userId = serviceTestHelper.getNewUserId();
         UserInfo userInfo1 = userInfoRepository.findById(userId).orElseThrow();
         assertFalse(userInfo1.getJwtRefreshToken() == null || userInfo1.getJwtRefreshToken().isBlank());
 
@@ -136,7 +153,7 @@ class UserServiceImplTest {
     public void editUserSuccessTest() throws Exception {
 
         // Given
-        Long userId = this.getNewUserId();
+        Long userId = serviceTestHelper.getNewUserId();
         EditUserReqDTO editUserReqDTO = new EditUserReqDTO("Modified");
 
         // When
@@ -151,8 +168,8 @@ class UserServiceImplTest {
     public void editUserDuplicateTest() throws Exception {
 
         // Given
-        Long userId1 = this.getNewUserId("aaa@gmail.com", "aaa", Provider.KAKAO);
-        Long userId2 = this.getNewUserId("bbb@gmail.com", "bbb", Provider.KAKAO);
+        Long userId1 = serviceTestHelper.getNewUserId("aaa@gmail.com", "aaa", Provider.KAKAO);
+        Long userId2 = serviceTestHelper.getNewUserId("bbb@gmail.com", "bbb", Provider.KAKAO);
         EditUserReqDTO editUserReqDTO = new EditUserReqDTO("bbb");
 
         // When
@@ -168,7 +185,7 @@ class UserServiceImplTest {
     public void withDrawUserTest() throws Exception {
 
         // Given
-        Long userId = this.getNewUserId();
+        Long userId = serviceTestHelper.getNewUserId();
 
         /*
          * flush new user created + clear:
@@ -196,7 +213,7 @@ class UserServiceImplTest {
     public void refreshSuccessTest() {
 
         // Given
-        SignInResDTO token = this.getNewUserToken();
+        SignInResDTO token = serviceTestHelper.getNewUserToken();
 
         // When
         SignInResDTO signInResDTO = userService.refreshToken(new RefreshTokenDTO(token.getRefreshToken()));
@@ -211,8 +228,8 @@ class UserServiceImplTest {
     public void myTrophyListTest() {
 
         // Given
-        Long userId = this.getNewUserId();
-        List<TrophyAwarded> trophyAwardedList = this.createNewTrophyAwarded(userId);
+        Long userId = serviceTestHelper.getNewUserId();
+        List<TrophyAwarded> trophyAwardedList = serviceTestHelper.createNewTrophyAwarded(userId);
 
         // When
         List<TrophyAwardedDTO> myTrophyList = userService.getMyTrophyList(new User(userId), 0, 10);
@@ -230,8 +247,8 @@ class UserServiceImplTest {
     public void myTrophyListPageTest() {
 
         // Given
-        Long userId = this.getNewUserId();
-        List<TrophyAwarded> trophyAwardedList = this.createNewTrophyAwarded(userId);
+        Long userId = serviceTestHelper.getNewUserId();
+        List<TrophyAwarded> trophyAwardedList = serviceTestHelper.createNewTrophyAwarded(userId);
 
         // When
         List<TrophyAwardedDTO> myTrophyList = userService.getMyTrophyList(new User(userId), 1, 1);
@@ -247,8 +264,8 @@ class UserServiceImplTest {
     public void myTrophyLatest() {
 
         // Given
-        Long userId = this.getNewUserId();
-        List<TrophyAwarded> trophyAwardedList = this.createNewTrophyAwarded(userId);
+        Long userId = serviceTestHelper.getNewUserId();
+        List<TrophyAwarded> trophyAwardedList = serviceTestHelper.createNewTrophyAwarded(userId);
 
         // When
         TrophyAwardedDTO trophyAwardedDTO = userService.getMyTrophyLatest(new User(userId));
@@ -256,61 +273,6 @@ class UserServiceImplTest {
         // Then
         assertEquals(trophyAwardedList.get(1).getTrophy().getTitle(),
                 trophyAwardedDTO.getTrophy().getTitle());
-    }
-
-
-    public SignInResDTO getNewUserToken() {
-        // Given
-        String email = "spring@gmail.com";
-        String nickname = "signUpTest";
-        SignUpReqDTO signUpReqDTO = new SignUpReqDTO(email, nickname, Provider.KAKAO);
-
-        // When
-        return userService.signUp(signUpReqDTO);
-    }
-
-    public Long getNewUserId() {
-        // Given
-        String email = "spring@gmail.com";
-        String nickname = "signUpTest";
-        SignUpReqDTO signUpReqDTO = new SignUpReqDTO(email, nickname, Provider.KAKAO);
-
-        // When
-        SignInResDTO signInResDTO = userService.signUp(signUpReqDTO); // sign-up
-
-        return jwtTokenProvider.getUserId(signInResDTO.getAccessToken());
-    }
-
-    public Long getNewUserId(String email, String nickname, Provider provider) {
-        SignUpReqDTO signUpReqDTO = new SignUpReqDTO(email, nickname, provider);
-
-        // When
-        SignInResDTO signInResDTO = userService.signUp(signUpReqDTO); // sign-up
-
-        return jwtTokenProvider.getUserId(signInResDTO.getAccessToken());
-    }
-
-    public List<TrophyAwarded> createNewTrophyAwarded(Long userId) {
-
-        // Given
-        Trophy trophy1 = trophyRepository.save(new Trophy(null, trophyName1, "https://asd111.com"));
-        Trophy trophy2 = trophyRepository.save(new Trophy(null, trophyName2, "https://asd222.com"));
-
-        List<TrophyAwarded> trophyAwardedList = new ArrayList<>();
-        trophyAwardedList.add(new TrophyAwarded(
-                new TrophyAwardedId(userId, trophy1.getId()),
-                new User(userId),
-                trophy1
-        ));
-        trophyAwardedList.add(new TrophyAwarded(
-                new TrophyAwardedId(userId, trophy2.getId()),
-                new User(userId),
-                trophy2
-        ));
-
-        trophyAwardedRepository.saveAll(trophyAwardedList);
-
-        return trophyAwardedList;
     }
 
 }

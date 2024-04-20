@@ -12,9 +12,12 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 public class ContentServiceImpl implements ContentService {
 
+    private final UserDAO userDAO;
     private final ContentDAO contentDAO;
     private final LevelDAO levelDAO;
     private final ContentStudiedDAO contentStudiedDAO;
@@ -23,11 +26,13 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     public ContentServiceImpl(ContentDAO contentDAO,
+                              UserDAO userDAO,
                               LevelDAO levelDAO,
                               ContentStudiedDAO contentStudiedDAO,
                               CategoryDAO categoryDAO,
                               CategoryChapterDAO categoryChapterDAO) {
         this.contentDAO = contentDAO;
+        this.userDAO = userDAO;
         this.levelDAO = levelDAO;
         this.contentStudiedDAO = contentStudiedDAO;
         this.categoryDAO = categoryDAO;
@@ -38,13 +43,8 @@ public class ContentServiceImpl implements ContentService {
     public List<LevelDTO> getLevelList() {
         List<Level> levelList = levelDAO.selectLevelList();
 
-        List<LevelDTO> levelDTOList = new ArrayList<>();
-
-        for (Level level: levelList) {
-            levelDTOList.add(new LevelDTO(level.getNum(), level.getTitle()));
-        }
-
-        return levelDTOList;
+        return levelList.stream()
+                .map(l -> new LevelDTO(l.getNum(), l.getTitle())).collect(toList());
     }
 
     @Override
@@ -103,7 +103,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Transactional
     @Override
-    public ContentStudiedDTO studyContent(User authUser, Long contentId) {
+    public ContentStudiedDTO studiedContent(User authUser, Long contentId) {
 
         ContentStudied contentStudied = ContentStudied.builder()
                 .id(new ContentStudiedId(authUser.getId(), contentId))
@@ -112,7 +112,7 @@ public class ContentServiceImpl implements ContentService {
                 .kept(false)
                 .build();
 
-        ContentStudied savedStudy = contentStudiedDAO.insertContentStudied(contentStudied);
+        ContentStudied savedStudy = contentStudiedDAO.saveContentStudied(contentStudied);
 
         ContentStudiedDTO contentStudiedDTO = ContentStudiedDTO.builder()
                 .userId(savedStudy.getId().getUserId())
@@ -135,7 +135,7 @@ public class ContentServiceImpl implements ContentService {
         // : unnecessary update occurs for updatedAt
         Boolean answer = contentExerciseReqDTO.getAnswer();
 
-        ContentStudied updatedStudy = contentStudiedDAO.updateContentStudied(authUser.getId(), contentId, answer);
+        ContentStudied updatedStudy = contentStudiedDAO.updateExerciseAnswer(authUser.getId(), contentId, answer);
 
         ContentStudiedDTO contentStudiedDTO = ContentStudiedDTO.builder()
                 .userId(updatedStudy.getId().getUserId())
@@ -209,9 +209,7 @@ public class ContentServiceImpl implements ContentService {
     }
     @Override
     public ContentDTO getContentStudiedLatest(User authUser) {
-        // TODO
-        // handle when there's no more content left
-        // decide rule for content Id
+
         Content content = contentDAO.selectStudiedLatest(authUser.getId());
 
         ContentDTO contentDTO

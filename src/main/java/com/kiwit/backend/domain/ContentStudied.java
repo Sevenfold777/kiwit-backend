@@ -40,5 +40,4 @@ public class ContentStudied extends BaseEntity {
     @MapsId("contentId")
     @JoinColumn(name = "content_id")
     private Content content;
-
 }

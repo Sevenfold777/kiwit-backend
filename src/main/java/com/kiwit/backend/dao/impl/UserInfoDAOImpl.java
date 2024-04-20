@@ -28,7 +28,7 @@ public class UserInfoDAOImpl implements UserInfoDAO {
     }
 
     @Override
-    public UserInfo insertUserInfo(UserInfo userInfo) {
+    public UserInfo saveUserInfo(UserInfo userInfo) {
         return userInfoRepository.save(userInfo);
     }
 

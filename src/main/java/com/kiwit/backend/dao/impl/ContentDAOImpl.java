@@ -35,9 +35,12 @@ public class ContentDAOImpl implements ContentDAO {
 
     @Override
     public Content selectStudiedLatest(Long userId) {
-        // TODO?: separate cause of empty
-        // 1) bad request, 2) all studied
         return contentRepository.findStudiedLatest(userId)
                 .orElseThrow(() -> new DataAccessException("Cannot find ContentStudied with userId and contentId.") {});
+    }
+
+    @Override
+    public Content getContentProxy(Long contentId) {
+        return contentRepository.getOne(contentId);
     }
 }

@@ -1,16 +1,11 @@
 package com.kiwit.backend.dao.impl;
 
-import com.kiwit.backend.common.exception.CustomException;
 import com.kiwit.backend.dao.UserDAO;
 import com.kiwit.backend.domain.User;
-import com.kiwit.backend.domain.UserInfo;
 import com.kiwit.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 @Component
 public class UserDAOImpl implements UserDAO {
@@ -45,4 +40,8 @@ public class UserDAOImpl implements UserDAO {
                 .orElseThrow(() -> new DataAccessException("Cannot find user with email") {});
     }
 
+    @Override
+    public User getUserProxy(Long userId) {
+        return userRepository.getOne(userId);
+    }
 }

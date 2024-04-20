@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
                 .provider(signUpReqDTO.getProvider())
                 .build();
 
-        UserInfo savedUserInfo = userInfoDAO.insertUserInfo(userInfo);
+        UserInfo savedUserInfo = userInfoDAO.saveUserInfo(userInfo);
 
         // issue token with id
         String accessToken = jwtTokenProvider.issueToken(savedUserInfo.getId(), false);

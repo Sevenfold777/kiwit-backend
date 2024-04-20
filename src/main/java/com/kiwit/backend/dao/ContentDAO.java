@@ -14,4 +14,6 @@ public interface ContentDAO {
     Content selectContentWithPayload(Long contentId);
 
     Content selectStudiedLatest(Long userId);
+
+    Content getContentProxy(Long contentId);
 }

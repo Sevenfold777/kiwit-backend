@@ -24,13 +24,13 @@ public class ContentStudiedDAOImpl implements ContentStudiedDAO {
     }
 
     @Override
-    public ContentStudied insertContentStudied(ContentStudied contentStudied) {
+    public ContentStudied saveContentStudied(ContentStudied contentStudied) {
         return contentStudiedRepository.save(contentStudied);
     }
 
     @Transactional
     @Override
-    public ContentStudied updateContentStudied(Long userId, Long contentId, Boolean answer) {
+    public ContentStudied updateExerciseAnswer(Long userId, Long contentId, Boolean answer) {
         ContentStudied contentStudied = contentStudiedRepository.findById(new ContentStudiedId(userId, contentId))
                 .orElseThrow(() -> new DataAccessException("Cannot find ContentStudied with userId and contentId.") {});
         contentStudied.setMyAnswer(answer);

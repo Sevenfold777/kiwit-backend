@@ -26,7 +26,7 @@ public class QuizGroupSolvedDAOImpl implements QuizGroupSolvedDAO {
     }
 
     @Override
-    public QuizGroupSolved insertGroupSolved(QuizGroupSolved groupSolved) {
+    public QuizGroupSolved saveGroupSolved(QuizGroupSolved groupSolved) {
         return quizGroupSolvedRepository.save(groupSolved);
     }
 

@@ -50,6 +50,20 @@ public class Content extends BaseEntity {
     @JoinColumn(name = "category_chapter_id")
     private CategoryChapter categoryChapter;
 
+    public Content(String title, int orderCat, int point, String exercise, boolean answer, Level level, CategoryChapter categoryChapter) {
+        this.title = title;
+        this.orderCat = orderCat;
+        this.point = point;
+        this.exercise = exercise;
+        this.answer = answer;
+        this.level = level;
+        this.categoryChapter = categoryChapter;
+    }
+
+    public Content(Long id) {
+        this.id = id;
+    }
+
     public Long getLevelNum() {
         if (level != null) {
             return level.getNum();
@@ -64,9 +78,5 @@ public class Content extends BaseEntity {
         } else {
             return  null;
         }
-    }
-
-    public Content(Long id) {
-        this.id = id;
     }
 }

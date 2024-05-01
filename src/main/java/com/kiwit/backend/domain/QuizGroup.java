@@ -52,5 +52,17 @@ public class QuizGroup extends BaseEntity {
     public QuizGroup(Long id) {
         this.id = id;
     }
+
+    public QuizGroup(String title, String subtitle, Integer totalScore, Level level, CategoryChapter categoryChapter) {
+        this.title = title;
+        this.subtitle = subtitle;
+        this.totalScore = totalScore;
+        this.level = level;
+        this.categoryChapter = categoryChapter;
+    }
+
+    public void setTotalScore(Integer totalScore) {
+        this.totalScore = totalScore;
+    }
 }
 

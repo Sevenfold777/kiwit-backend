@@ -1,6 +1,7 @@
 package com.kiwit.backend.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kiwit.backend.common.constant.Provider;
 import com.kiwit.backend.common.constant.Status;
 import com.kiwit.backend.common.exception.CustomException;
 import com.kiwit.backend.config.security.JwtTokenProvider;
@@ -23,11 +24,11 @@ import java.util.Map;
 @Service
 public class UserServiceImpl implements UserService {
 
-    UserDAO userDAO;
-    UserInfoDAO userInfoDAO;
-    TrophyAwardedDAO trophyAwardedDAO;
-    JwtTokenProvider jwtTokenProvider;
-    KakaoAuthService kakaoAuthService;
+    private final UserDAO userDAO;
+    private final UserInfoDAO userInfoDAO;
+    private final TrophyAwardedDAO trophyAwardedDAO;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final KakaoAuthService kakaoAuthService;
 
     @Autowired
     public UserServiceImpl(UserDAO userDAO,
@@ -85,7 +86,6 @@ public class UserServiceImpl implements UserService {
                 throw new CustomException(HttpStatus.BAD_REQUEST);
             }
         }
-
 
         try {
             // 2-1. sign JWT access token, refresh token

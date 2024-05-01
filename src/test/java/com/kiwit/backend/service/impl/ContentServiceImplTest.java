@@ -26,9 +26,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @DisplayName("ContentService Test")
 class ContentServiceImplTest {
 
-    ContentService contentService;
-    ServiceTestHelper serviceTestHelper;
-    EntityManager em;
+    private final ContentService contentService;
+    private final ServiceTestHelper serviceTestHelper;
+    private final EntityManager em;
+
+    /* fields for global entities
+       - list var name ends with "s" not "List" */
+    private Long userId;
+    private List<Level> levels;
+    private List<Category> categories;
+    private List<CategoryChapter> categoryChapters;
+    private List<Content> contents;
 
     @Autowired
     public ContentServiceImplTest(
@@ -43,14 +51,6 @@ class ContentServiceImplTest {
                 this.em, userService, jwtTokenProvider
         );
     }
-
-    Long userId;
-
-    List<Level> levels;
-    List<Category> categories;
-    List<CategoryChapter> categoryChapters;
-    List<Content> contents;
-
 
 
     @Test
@@ -228,7 +228,7 @@ class ContentServiceImplTest {
 
     @Test
     @DisplayName("보관한 콘텐츠 조회")
-    public void getContentsKept() {
+    public void getContentsKeptTest() {
 
         // Given
         initContents();
@@ -251,7 +251,7 @@ class ContentServiceImplTest {
 
     @Test
     @DisplayName("보관한 콘텐츠 조회 (보관 내역 없음)")
-    public void getContentsKeptNone() {
+    public void getContentsKeptNoneTest() {
 
         // Given
         initContents();
@@ -269,7 +269,7 @@ class ContentServiceImplTest {
 
     @Test
     @DisplayName("학습한 콘텐츠 조회")
-    public void getStudiedContent() {
+    public void getStudiedContentTest() {
 
         // Given
         initContents();
@@ -296,7 +296,7 @@ class ContentServiceImplTest {
 
     @Test
     @DisplayName("학습한 콘텐츠 조회 (학습 내역 없음)")
-    public void getStudiedContentNone() {
+    public void getStudiedContentNoneTest() {
 
         // Given
         initContents();

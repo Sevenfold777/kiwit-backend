@@ -81,7 +81,6 @@ public class QuizServiceImpl implements QuizService {
 
             List<QuizChoiceDTO> quizChoiceDTOList = new ArrayList<>();
 
-            // should be changed to enum
             if (q.getType() == QuizType.MULTIPLE) {
                 for (QuizChoice choice : q.getChoiceList()) {
                     QuizChoiceDTO quizChoiceDTO

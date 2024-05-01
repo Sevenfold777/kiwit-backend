@@ -2,11 +2,12 @@ package com.kiwit.backend.service.impl;
 
 import com.kiwit.backend.common.constant.ContentType;
 import com.kiwit.backend.common.constant.Provider;
+import com.kiwit.backend.common.constant.QuizType;
 import com.kiwit.backend.config.security.JwtTokenProvider;
 import com.kiwit.backend.domain.*;
 import com.kiwit.backend.domain.compositeKey.ContentPayloadId;
+import com.kiwit.backend.domain.compositeKey.QuizChoiceId;
 import com.kiwit.backend.domain.compositeKey.TrophyAwardedId;
-import com.kiwit.backend.dto.LevelDTO;
 import com.kiwit.backend.dto.SignInResDTO;
 import com.kiwit.backend.dto.SignUpReqDTO;
 import com.kiwit.backend.repository.TrophyAwardedRepository;
@@ -181,7 +182,6 @@ public class ServiceTestHelper {
      * @param levelList
      * : 생성된 Level 리스트
      */
-
     public List<Content> createContentWithPayload(List<CategoryChapter> categoryChapterList, List<Level> levelList) {
 
         List<Content> contentList = new ArrayList<>();
@@ -212,4 +212,74 @@ public class ServiceTestHelper {
 
         return contentList;
     }
+
+    /**
+     * 문제 목록(QuizGroup) list 생성
+     * Level과 CategoryChapter의 FK를 가지므로 이들을 인수로 받아서 사용
+     * @param levelList
+     * : 본 함수 호출 전 생성된 레벨 list
+     * @param categoryChapterList
+     * : 본 함수 호출 전 생성된 과목 챕터 list
+     */
+    public List<QuizGroup> createQuizGroup(List<Level> levelList, List<CategoryChapter> categoryChapterList) {
+
+        List<QuizGroup> quizGroupList = new ArrayList<>();
+
+        int i = 0;
+        for (CategoryChapter categoryChapter : categoryChapterList) {
+
+            QuizGroup quizGroup = new QuizGroup("문제 목록 " + i, "문제 목록 " + i +" 부제",
+                    0, levelList.get(i % 5), categoryChapter);
+            em.persist(quizGroup);
+            quizGroupList.add(quizGroup);
+            i++;
+        }
+
+        return quizGroupList;
+    }
+
+    /**
+     * 인수로 받은 문제 목록(quizGroupList)에 대하여
+     * 유형별 1개 quiz(+ choice) 생성
+     * @param quizGroupList
+     * : 문제를 생성할 타겟 목록 (본 함수 호출 이전 생성)
+     */
+    public  List<Quiz> createQuiz(List<QuizGroup> quizGroupList) {
+
+        List<Quiz> quizList = new ArrayList<>();
+
+        int i = 0;
+        for (QuizGroup quizGroup: quizGroupList) {
+
+            // 객관식
+            Quiz quizMultiple = new Quiz("[" + i + "]" + "문제 1", QuizType.MULTIPLE,
+                    "객관식 질문 1", "2", "객관식 해설 1", 20, quizGroup);
+            em.persist(quizMultiple);
+
+            // 객관식 선택지 1~4번
+            for (int j = 1; j < 5; j++) {
+                QuizChoice choice1 = new QuizChoice(
+                        new QuizChoiceId(j, quizMultiple.getId()), "선택지 " + j + "번", quizMultiple);
+                em.persist(choice1);
+            }
+
+            // TF(O/X) 퀴즈
+            Quiz quizTF = new Quiz("[" + i + "]" + "문제 2", QuizType.TF,
+                    "O/X 질문 1", "true", "O/X 해설 1", 10, quizGroup);
+            em.persist(quizTF);
+
+            // 단답형
+            Quiz quizShort = new Quiz("[" + i + "]" + "문제 3", QuizType.SHORT,
+                    "단답형 질문 1", "DFS", "단답형 해설 1", 30, quizGroup);
+            em.persist(quizShort);
+
+            quizGroup.setTotalScore(quizMultiple.getScore() + quizTF.getScore() + quizShort.getScore());
+            quizGroup.getQuizList().add(quizMultiple);
+            quizGroup.getQuizList().add(quizTF);
+            quizGroup.getQuizList().add(quizShort);
+        }
+
+        return  quizList;
+    }
+
 }

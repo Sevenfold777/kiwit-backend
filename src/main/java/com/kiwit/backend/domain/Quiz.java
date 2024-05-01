@@ -51,4 +51,15 @@ public class Quiz extends BaseEntity {
     public Quiz(Long id) {
         this.id = id;
     }
+
+    public Quiz(String title, QuizType type, String question, String answer,
+                String explanation, Integer score, QuizGroup group) {
+        this.title = title;
+        this.type = type;
+        this.question = question;
+        this.answer = answer;
+        this.explanation = explanation;
+        this.score = score;
+        this.group = group;
+    }
 }

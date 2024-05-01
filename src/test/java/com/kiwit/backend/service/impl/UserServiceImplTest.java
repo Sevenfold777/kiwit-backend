@@ -33,13 +33,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("UserService Test")
 class UserServiceImplTest {
 
-    UserService userService;
-    UserRepository userRepository;
-    UserInfoRepository userInfoRepository;
-    TrophyRepository trophyRepository;
-    TrophyAwardedRepository trophyAwardedRepository;
-    JwtTokenProvider jwtTokenProvider;
-    ServiceTestHelper serviceTestHelper;
+    private final UserService userService;
+    private final UserRepository userRepository;
+    private final UserInfoRepository userInfoRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final ServiceTestHelper serviceTestHelper;
 
     @Autowired
     UserServiceImplTest(UserService userService,
@@ -51,8 +49,6 @@ class UserServiceImplTest {
         this.userService = userService;
         this.userRepository = userRepository;
         this.userInfoRepository = userInfoRepository;
-        this.trophyRepository = trophyRepository;
-        this.trophyAwardedRepository = trophyAwardedRepository;
         this.jwtTokenProvider = jwtTokenProvider;
 
         this.serviceTestHelper = new ServiceTestHelper(

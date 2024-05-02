@@ -1,10 +1,8 @@
 package com.kiwit.backend.service.impl;
 
 import com.kiwit.backend.common.constant.QuizType;
-import com.kiwit.backend.dao.QuizDAO;
-import com.kiwit.backend.dao.QuizGroupDAO;
-import com.kiwit.backend.dao.QuizGroupSolvedDAO;
-import com.kiwit.backend.dao.QuizSolvedDAO;
+import com.kiwit.backend.common.exception.CustomException;
+import com.kiwit.backend.dao.*;
 import com.kiwit.backend.domain.*;
 import com.kiwit.backend.domain.compositeKey.QuizGroupSolvedId;
 import com.kiwit.backend.domain.compositeKey.QuizSolvedId;
@@ -12,11 +10,10 @@ import com.kiwit.backend.dto.*;
 import com.kiwit.backend.service.QuizService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class QuizServiceImpl implements QuizService {
@@ -25,16 +22,19 @@ public class QuizServiceImpl implements QuizService {
     private final QuizGroupDAO quizGroupDAO;
     private final QuizGroupSolvedDAO quizGroupSolvedDAO;
     private final QuizSolvedDAO quizSolvedDAO;
+    private final UserDAO userDAO;
 
     @Autowired
     public QuizServiceImpl(QuizDAO quizDAO,
                            QuizGroupDAO quizGroupDAO,
                            QuizGroupSolvedDAO quizGroupSolvedDAO,
-                           QuizSolvedDAO quizSolvedDAO) {
+                           QuizSolvedDAO quizSolvedDAO,
+                           UserDAO userDAO) {
         this.quizDAO = quizDAO;
         this.quizGroupDAO = quizGroupDAO;
         this.quizGroupSolvedDAO = quizGroupSolvedDAO;
         this.quizSolvedDAO = quizSolvedDAO;
+        this.userDAO = userDAO;
     }
 
     @Override
@@ -134,38 +134,48 @@ public class QuizServiceImpl implements QuizService {
         // even not answer changed
         // update query fires...
 
+        User userProxy = userDAO.getUserProxy(user.getId());
         QuizGroup quizGroup = quizGroupDAO.selectGroupWithQuiz(groupId);
+
+        List<QuizAnswerDTO> answerDTOList = quizAnswerListDTO.getAnswerList();
+        List<Quiz> quizList = quizGroup.getQuizList();
+
+        if (answerDTOList.size() != quizList.size()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
 
         Integer scoreGot = 0;
         List<QuizSolved> quizSolvedList = new ArrayList<>();
 
         // 1. iterate dto and create entity. check user answers
-        for (QuizAnswerDTO answer : quizAnswerListDTO.getAnswerList()) {
+        answerDTOList.sort(Comparator.comparing(QuizAnswerDTO::getQuizId));
+        quizList.sort(Comparator.comparing(Quiz::getId));
 
-            Boolean correct = false;
+        for (int i = 0; i < answerDTOList.size(); i++) {
+
+            boolean correct = false;
+
+            Quiz quiz = quizList.get(i);
+            QuizAnswerDTO answer = answerDTOList.get(i);
 
             // check answer
-            Optional<Quiz> quiz =  quizGroup.getQuizList().stream()
-                    .filter(q -> q.getId().equals(answer.getQuizId())).findAny();
+            if (!answer.getQuizId().equals(quiz.getId())) {
+                throw new CustomException(HttpStatus.BAD_REQUEST);
+            }
 
-            if (quiz.isPresent()) {
-                correct = answer.getAnswer().equals(quiz.get().getAnswer());
-                if (correct) {
-                    scoreGot += quiz.get().getScore();
-                }
-            } else {
-                // throw exception
-                 return null;
+            correct = answer.getAnswer().equals(quiz.getAnswer());
+            if (correct) {
+                scoreGot += quiz.getScore();
             }
 
             QuizSolved solved = QuizSolved
                     .builder()
                     .id(new QuizSolvedId(user.getId(), answer.getQuizId()))
-                    .user(new User(user.getId()))
-                    .quiz(new Quiz(answer.getQuizId()))
+                    .user(userProxy)
+                    .quiz(quiz)
                     .myAnswer(answer.getAnswer())
                     .correct(correct)
-                    .kept(false) // column default 확인하기
+                    .kept(false) // @DynamicInsert 적용되지 않았기에 반드시 작성해야
                     .build();
 
             quizSolvedList.add(solved);
@@ -174,17 +184,17 @@ public class QuizServiceImpl implements QuizService {
         // 2. save quiz answers
         List<QuizSolved> savedQuizSolved = quizSolvedDAO.saveQuizSolvedList(quizSolvedList);
 
+        // 3. save group solved result with calculated scores
         QuizGroupSolved quizGroupSolved
                 = QuizGroupSolved
                 .builder()
                 .id(new QuizGroupSolvedId(user.getId(), groupId))
-                .user(new User(user.getId()))
-                .quizGroup(new QuizGroup(groupId))
+                .user(userProxy)
+                .quizGroup(quizGroup)
                 .highestScore(scoreGot)
                 .latestScore(scoreGot)
                 .build();
 
-        // 3. save group solved result with calculated scores
         QuizGroupSolved savedQuizGroupSolved = quizGroupSolvedDAO.saveGroupSolved(quizGroupSolved);
 
         // 4. Generate Response DTO

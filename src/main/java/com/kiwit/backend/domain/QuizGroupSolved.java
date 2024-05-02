@@ -3,6 +3,7 @@ package com.kiwit.backend.domain;
 import com.kiwit.backend.domain.compositeKey.QuizGroupSolvedId;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.domain.Persistable;
 
 @Entity
 @Table(name = "quiz_group_solved")
@@ -12,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(of = "id", callSuper = false)
-public class QuizGroupSolved extends BaseEntity {
+public class QuizGroupSolved extends BaseEntity implements Persistable<QuizGroupSolvedId> {
     
     @EmbeddedId
     private QuizGroupSolvedId id;
@@ -33,4 +34,8 @@ public class QuizGroupSolved extends BaseEntity {
     @JoinColumn(name = "quiz_group_id")
     private QuizGroup quizGroup;
 
+    @Override
+    public boolean isNew() {
+        return this.getCreatedAt() == null;
+    }
 }

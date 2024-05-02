@@ -12,8 +12,8 @@ public interface QuizService {
 
     List<QuizGroupDTO> getQuizGroup(Integer next, Integer limit);
     QuizGroupWithQuizDTO solveQuizGroup(Long groupId);
-    QuizGroupSolvedDTO submitAnswers(User user, Long quizId, QuizAnswerListDTO quizAnswerListDTO);
-    QuizGroupSolvedDTO resubmitAnswers(User user, Long quizId, QuizAnswerListDTO quizAnswerListDTO);
+    QuizGroupSolvedDTO submitAnswers(User user, Long groupId, QuizAnswerListDTO quizAnswerListDTO);
+    QuizGroupSolvedDTO resubmitAnswers(User user, Long groupId, QuizAnswerListDTO quizAnswerListDTO);
     QuizGroupWithSolvedDTO getQuizGroupLatestSolved(User user);
     List<QuizGroupWithSolvedDTO> getQuizGroupSolved(User user, Integer next, Integer limit);
     List<QuizWithSolvedDTO> getQuizKept(User user, Integer next, Integer limit);

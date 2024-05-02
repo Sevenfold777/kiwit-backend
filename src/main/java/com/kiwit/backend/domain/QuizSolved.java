@@ -4,6 +4,9 @@ import com.kiwit.backend.domain.compositeKey.QuizSolvedId;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.data.domain.Persistable;
 
 @Entity
 @Table(name = "quiz_solved")
@@ -13,7 +16,9 @@ import org.hibernate.annotations.ColumnDefault;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(of = "id", callSuper = false)
-public class QuizSolved extends BaseEntity {
+//@DynamicInsert // 사용시 batch insert 적용되지 않음
+@DynamicUpdate
+public class QuizSolved extends BaseEntity implements Persistable<QuizSolvedId> {
 
     @EmbeddedId
     private QuizSolvedId id;
@@ -39,4 +44,8 @@ public class QuizSolved extends BaseEntity {
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
 
+    @Override
+    public boolean isNew() {
+        return this.getCreatedAt() == null;
+    }
 }

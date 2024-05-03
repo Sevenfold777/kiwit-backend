@@ -22,7 +22,8 @@ public interface QuizSolvedRepository extends JpaRepository<QuizSolved, QuizSolv
     @Query("select S " +
             "from QuizSolved S " +
             "join fetch S.quiz " +
-            "where S.id.userId = :userId")
+            "where S.id.userId = :userId " +
+            "order by S.id asc")
     List<QuizSolved> findQuizSolved(@Param("userId") Long userId);
 
 
@@ -30,6 +31,7 @@ public interface QuizSolvedRepository extends JpaRepository<QuizSolved, QuizSolv
             "from QuizSolved S " +
             "join fetch S.quiz " +
             "where S.id.userId = :userId " +
-            "and S.quiz.group.id = :groupId")
+            "and S.quiz.group.id = :groupId " +
+            "order by S.id asc")
     List<QuizSolved> findQuizSolvedWithQuiz(@Param("userId") Long userId, @Param("groupId") Long groupId);
 }

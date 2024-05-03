@@ -45,9 +45,4 @@ public class ContentStudied extends BaseEntity implements Persistable<ContentStu
     public boolean isNew() {
         return this.getCreatedAt() == null;
     }
-
-    @Override
-    public ContentStudiedId getId() {
-        return this.id;
-    }
 }

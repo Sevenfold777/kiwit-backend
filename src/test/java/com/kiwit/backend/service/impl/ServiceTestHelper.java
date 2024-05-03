@@ -277,9 +277,13 @@ public class ServiceTestHelper {
             quizGroup.getQuizList().add(quizMultiple);
             quizGroup.getQuizList().add(quizTF);
             quizGroup.getQuizList().add(quizShort);
+
+            quizList.add(quizMultiple);
+            quizList.add(quizTF);
+            quizList.add(quizShort);
         }
 
-        return  quizList;
+        return quizList;
     }
 
 }

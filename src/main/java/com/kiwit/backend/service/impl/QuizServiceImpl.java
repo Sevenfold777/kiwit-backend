@@ -129,10 +129,6 @@ public class QuizServiceImpl implements QuizService {
     @Transactional
     @Override
     public QuizGroupSolvedDTO submitAnswers(User user, Long groupId, QuizAnswerListDTO quizAnswerListDTO) {
-        // TODO
-        // if call this function for already solved problem,
-        // even not answer changed
-        // update query fires...
 
         User userProxy = userDAO.getUserProxy(user.getId());
         QuizGroup quizGroup = quizGroupDAO.selectGroupWithQuiz(groupId);
@@ -144,7 +140,7 @@ public class QuizServiceImpl implements QuizService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
-        Integer scoreGot = 0;
+        int scoreGot = 0;
         List<QuizSolved> quizSolvedList = new ArrayList<>();
 
         // 1. iterate dto and create entity. check user answers
@@ -215,45 +211,49 @@ public class QuizServiceImpl implements QuizService {
     public QuizGroupSolvedDTO resubmitAnswers(User user, Long groupId, QuizAnswerListDTO quizAnswerListDTO) {
 
         // 1. get quiz solved with quiz (corresponding group)
-        List<QuizSolved> quizSolvedList = quizSolvedDAO.selectQuizSolvedWithQuizByGroup(user.getId(), groupId);
         QuizGroupSolved quizGroupSolved = quizGroupSolvedDAO.selectGroupSolvedWithGroup(user.getId(), groupId);
+        List<QuizSolved> quizSolvedList = quizSolvedDAO.selectQuizSolvedWithQuizByGroup(user.getId(), groupId);
 
-        Integer scoreGot = 0;
+        List<QuizAnswerDTO> answerDTOList = quizAnswerListDTO.getAnswerList();
 
-        for (QuizSolved s : quizSolvedList) {
-
-            Boolean correct = false;
-
-            // 2. check answer
-            Optional<QuizAnswerDTO> answerDTO = quizAnswerListDTO.getAnswerList().stream()
-                                .filter(a -> a.getQuizId().equals(s.getId().getQuizId())).findAny();
-
-            String answerNew = answerDTO.get().getAnswer();
-
-            // check correct and add score
-            if (answerDTO.isPresent()) {
-                correct = answerNew.equals(s.getQuiz().getAnswer());
-                if (correct) {
-                    scoreGot += s.getQuiz().getScore();
-                }
-            } else {
-                // throw exception
-                return null;
-            }
-
-            // 3. update quiz solved
-            s.setMyAnswer(answerNew);
-            s.setCorrect(correct);
-
+        if (answerDTOList.size() != quizSolvedList.size()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 
-        // 4. update quiz group solved scores
+        // quizSolvedList already sorted while DB fetch
+        answerDTOList.sort(Comparator.comparing(QuizAnswerDTO::getQuizId));
+
+        int scoreGot = 0;
+
+        for (int i = 0; i < answerDTOList.size(); i++) {
+
+            boolean correct = false;
+
+            QuizSolved quizSolved = quizSolvedList.get(i);
+            QuizAnswerDTO answer = answerDTOList.get(i);
+
+            // check answer
+            if (!answer.getQuizId().equals(quizSolved.getId().getQuizId())) {
+                throw new CustomException(HttpStatus.BAD_REQUEST);
+            }
+
+            correct = answer.getAnswer().equals(quizSolved.getQuiz().getAnswer());
+            if (correct) {
+                scoreGot += quizSolved.getQuiz().getScore();
+            }
+
+            // dirty check (update)
+            quizSolved.setMyAnswer(answer.getAnswer());
+            quizSolved.setCorrect(correct);
+        }
+
+        // update quiz group solved scores
         quizGroupSolved.setLatestScore(scoreGot);
         if (quizGroupSolved.getHighestScore() < scoreGot) {
             quizGroupSolved.setHighestScore(scoreGot);
         }
 
-        // 4. Generate Response DTO
+        // Generate Response DTO
         QuizGroupSolvedDTO quizGroupSolvedDTO
                 = QuizGroupSolvedDTO
                 .builder()

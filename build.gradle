@@ -46,10 +46,6 @@ dependencies {
 
 	implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
 	// delete when deploy (for m1 development)
-
-	//	AWS to be added (*not really needed in this service actually)
-	//	FCM to be added
-	//	which version to choose?
 }
 
 tasks.named('test') {

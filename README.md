@@ -11,7 +11,7 @@
 - AWS: EC2, ELB, RDS, Route53, ECR, S3, etc 
 - Docker
 - JWT Refresh Token Rotation
-- 소셜 로그인 (KAKAO, APPLE 예정)
+- 소셜 로그인 - KAKAO (APPLE 예정)
 
 ## Architecture
 
@@ -30,7 +30,31 @@
 - v. 240314 
 - Relation Edge는 Many와 One으로만 구분 (Many or none 등 무의미, 수정 예정) 
 
-![240317](https://github.com/Sevenfold777/kiwit-backend/assets/88102203/d9cfc977-a94c-4767-9fae-75ee225c50cb)
+![kiwit_db (3)](https://github.com/Sevenfold777/kiwit-backend/assets/88102203/41299df8-4f2f-4c34-a245-0c2a3f929927)
+
+## 테이블 설계 원칙
+
+### 복합키 사용 식별 관계 우선
+
+- 두 개의 테이블의 Many-To-Many 관계를 이루어주는, 즉, 두 개의 Many-To-One 관계를 가지는 테이블은 가능한 복합키를 가지도록 설계 (생각 없이 대리키를 추가하지 않는 테이블 설계 목표)
+
+- 서비스 특성 상, 다른 사용자와의 교류가 발생하지 않가에, user_id를 기준으로 대부분 쿼리 진행
+
+- (user_id, other_table_id) 순으로 복합키를 구성하여 PK index를 통해 효율적으로 로그인한 사용자과 관련된 학습 내역 등을 쿼리 할 수 있도록 구현
+
+### 확장 가능성을 위한 대리키와 비식별 관계 사용
+
+- 테이블과 관련된 서비스가 당장 대리키가 필요하지 않더라도 해당 서비스의 확장 가능성이 다분하다고 판단될 경우 대리키와 비식별 관계를 적용하여 유연한 테이블 구조 설정
+
+- 복합키 사용으로 인헤 테이블 구조가 유연해지지 못하는 것을 체감
+
+- 사례: quiz_group_solved 테이블 (문제 풀이 서비스 관련)
+
+    - 현재 서비스 요구 사항은 사용자 당 한 문제에 대해 최신 / 최고 점수만 확인 가능
+  
+    - 그러나 서비스 성장 시 n회 문제 풀이 후 성장 추이 분석 등의 니즈가 발생할 것으로 예상됨 --> 대리키, 비식별 관계를 적용한 확장 가능성 확보 
+
+![복합키, 대리키](https://github.com/Sevenfold777/kiwit-backend/assets/88102203/17d5f732-a30c-43b0-92ec-7a3472091956)
 
 ## DB Manual Settings
 
@@ -191,13 +215,3 @@ testImplementation 'org.springframework.security:spring-security-test'
 // for Apple Silicon Webclient
 implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
 ```
-
-## TODOs
-
-
-- [x] Pagination
-- [x] Exception handling 세분화
-- [ ] Test 작성
-- [x] annotation 정리
-- [x] Logging Exceptions (stack trace)
-- [ ] Relation Cascade

@@ -39,6 +39,7 @@ public class KakaoAuthServiceImpl implements KakaoAuthService {
 
             return authResultDTO;
         } catch (Exception e) {
+            // TODO: Exception 분기 - 400 Vs. 500 (지금은 전부 400으로, 클라이언트 문제로 인식)
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
 

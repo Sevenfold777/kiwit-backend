@@ -15,4 +15,6 @@ public interface ContentStudiedDAO {
     List<ContentStudied> selectContentListKept(Long userId, Integer next, Integer limit);
 
     List<ContentStudied> selectContentListStudied(Long userId, Integer next, Integer limit);
+
+    ContentStudied selectContentStudied(Long userId, Long contentId);
 }

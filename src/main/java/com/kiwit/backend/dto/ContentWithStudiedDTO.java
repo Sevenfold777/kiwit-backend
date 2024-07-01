@@ -20,5 +20,6 @@ public class ContentWithStudiedDTO {
     private Boolean answer;
     private Long levelNum;
     private Long categoryChapterId;
+    private String payloadUrl;
     private ContentStudiedDTO contentStudied;
 }

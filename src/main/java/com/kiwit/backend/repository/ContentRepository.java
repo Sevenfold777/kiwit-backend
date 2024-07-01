@@ -17,14 +17,6 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
             "order by C.id asc")
     List<Content> findAllByLevelId(@Param("levelNum") Long levelId, Pageable pageable);
 
-
-    @Query("select C " +
-            "from Content C " +
-            "join fetch C.payloadList " +
-            "where C.id = :contentId")
-    Optional<Content> findContentWithPayload(@Param("contentId") Long contentId);
-
-
     @Query("select C " +
             "from Content C " +
             "where C.id = " +
@@ -36,4 +28,13 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
             "order by C.id asc " +
             "limit 1")
     Optional<Content> findStudiedLatest(@Param("userId") Long userId);
+
+    @Query("select C" +
+            " from Content C" +
+            " left join C.contentStudiedList S" +
+            "   on S.id.userId = :userId" +
+            " where C.id = :contentId" +
+            " order by C.id" +
+            " limit 1")
+    Optional<Content> findContentWithStudied(@Param("contentId") Long contentId, @Param("userId") Long userId);
 }

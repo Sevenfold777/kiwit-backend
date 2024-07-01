@@ -19,4 +19,5 @@ public class ContentDTO {
     private Boolean answer;
     private Long levelNum;
     private Long categoryChapterId;
+    private String payloadUrl;
 }

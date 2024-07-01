@@ -2,7 +2,7 @@ package com.kiwit.backend.service.impl;
 
 import com.kiwit.backend.config.security.JwtTokenProvider;
 import com.kiwit.backend.domain.*;
-import com.kiwit.backend.domain.compositeKey.ContentPayloadId;
+import com.kiwit.backend.domain.compositeKey.ContentStudiedId;
 import com.kiwit.backend.dto.*;
 import com.kiwit.backend.service.ContentService;
 import com.kiwit.backend.service.UserService;
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
@@ -137,21 +138,60 @@ class ContentServiceImplTest {
     }
 
     @Test
-    @DisplayName("콘텐츠 내용 조회")
+    @DisplayName("콘텐츠 내용 조회, 학습 전")
     public void getContentPayloadTest() {
 
         // Given
+        initUser();
+        User user = new User(userId);
+
         initContents();
         Content content = contents.get(0);
 
         // When
-        ContentWithPayloadDTO contentWithPayloadDTO = contentService.getContentPayload(content.getId());
+        ContentWithStudiedDTO contentWithStudiedDTO = contentService.getContentPayload(user, content.getId());
 
         // Then
-        assertThat(contentWithPayloadDTO.getPayloadList()
-                        .stream().map(p -> new ContentPayloadId(p.getNumber(), p.getContentId())).collect(toList()))
-                .isEqualTo(content.getPayloadList()
-                        .stream().map(ContentPayload::getId).collect(toList()));
+        assertThat(contentWithStudiedDTO.getPayloadUrl())
+                .isEqualTo(content.getPayloadUrl());
+
+        assertThat(contentWithStudiedDTO.getContentStudied()).isNull();
+    }
+
+    @Test
+    @DisplayName("콘텐츠 내용 조회, 이미 학습한 콘텐츠")
+    public void getContentPayloadAlreadyStudied() {
+
+        // given
+        initUser();
+        initContents();
+
+        User user = em.find(User.class, userId);
+        Content content = em.find(Content.class, contents.get(0).getId());
+
+        // content studied 생성 => 이미 학습 완료 한 콘텐츠
+        ContentStudied contentStudied = new ContentStudied(
+                new ContentStudiedId(userId, content.getId()),true, false, user, content
+        );
+
+        em.persist(contentStudied);
+
+        em.flush();
+        em.clear();
+
+
+        // when
+        ContentWithStudiedDTO contentWithStudiedDTO = contentService.getContentPayload(user, content.getId());
+
+        // then
+        assertThat(contentWithStudiedDTO.getPayloadUrl())
+                .isEqualTo(content.getPayloadUrl());
+
+        assertThat(contentWithStudiedDTO.getContentStudied().getUserId())
+                .isEqualTo(userId);
+
+        assertThat(contentWithStudiedDTO.getContentStudied().getContentId())
+                .isEqualTo(content.getId());
     }
 
     @Test
@@ -159,12 +199,15 @@ class ContentServiceImplTest {
     public void getContentPayloadFailTest() {
 
         // Given
+        initUser();
+        User user = new User(userId);
+
         initContents();
 
         // When
         // 처음 DB 초기화 시 조회 성공 => 테스트 재실행시 정상 동작
         assertThrows(DataAccessException.class,
-                () -> contentService.getContentPayload(1L));
+                () -> contentService.getContentPayload(user, 1L));
     }
 
     @Test

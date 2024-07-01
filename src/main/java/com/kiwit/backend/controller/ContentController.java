@@ -40,9 +40,10 @@ public class ContentController {
     }
 
     @GetMapping("/{contentId}")
-    public ResponseEntity<ContentWithPayloadDTO>
-    getContentPayload(@PathVariable Long contentId) {
-        ContentWithPayloadDTO resDto = contentService.getContentPayload(contentId);
+    public ResponseEntity<ContentWithStudiedDTO>
+    getContentPayload(@AuthenticationPrincipal User authUser,
+                      @PathVariable Long contentId) {
+        ContentWithStudiedDTO resDto = contentService.getContentPayload(authUser, contentId);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 

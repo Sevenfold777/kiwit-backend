@@ -28,15 +28,21 @@ public class ContentDAOImpl implements ContentDAO {
     }
 
     @Override
-    public Content selectContentWithPayload(Long contentId)  {
-        return contentRepository.findContentWithPayload(contentId)
-                .orElseThrow(() -> new DataAccessException("Cannot find Content with contentId.") {});
+    public Content selectContent(Long contentId) {
+        return contentRepository.findById(contentId)
+                .orElseThrow(() -> new DataAccessException("Cannot find Content the contentId.") {});
     }
 
     @Override
     public Content selectStudiedLatest(Long userId) {
         return contentRepository.findStudiedLatest(userId)
                 .orElseThrow(() -> new DataAccessException("Cannot find ContentStudied with userId and contentId.") {});
+    }
+
+    @Override
+    public Content selectContentWithStudied(Long contentId, Long userId) {
+        return contentRepository.findContentWithStudied(contentId, userId)
+                .orElseThrow(() -> new DataAccessException("Cannot find the content.") {});
     }
 
     @Override

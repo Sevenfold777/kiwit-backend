@@ -5,7 +5,6 @@ import com.kiwit.backend.common.constant.Provider;
 import com.kiwit.backend.common.constant.QuizType;
 import com.kiwit.backend.config.security.JwtTokenProvider;
 import com.kiwit.backend.domain.*;
-import com.kiwit.backend.domain.compositeKey.ContentPayloadId;
 import com.kiwit.backend.domain.compositeKey.QuizChoiceId;
 import com.kiwit.backend.domain.compositeKey.TrophyAwardedId;
 import com.kiwit.backend.dto.SignInResDTO;
@@ -191,20 +190,10 @@ public class ServiceTestHelper {
             for (int i = 1; i < 3; i++) {
 
                 Content content = new Content(
-                        chapter.getId() + " 콘텐츠 (" + i + ")", i, 10, chapter.getId() + "예제 (" + i + ")",
-                        true, levelList.get(i - 1), chapter
+                        chapter.getId() + " 콘텐츠 (" + i + ")", "http://temp_payload_url.com", i, 10,
+                        chapter.getId() + "예제 (" + i + ")", true, levelList.get(i - 1), chapter
                 );
                 em.persist(content);
-
-                for (int j = 1; j < 4; j++) {
-                    ContentPayload contentPayload = new ContentPayload(
-                            new ContentPayloadId(j, content.getId()),
-                                    j % 2 == 0 ? ContentType.IMAGE : ContentType.TEXT,
-                            "콘텐츠 내용 - " + j, content
-                    );
-                    em.persist(contentPayload);
-                    content.getPayloadList().add(contentPayload);
-                }
 
                 contentList.add(content);
             }

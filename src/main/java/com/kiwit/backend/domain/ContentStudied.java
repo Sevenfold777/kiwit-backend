@@ -18,6 +18,7 @@ import org.springframework.data.domain.Persistable;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @DynamicInsert
 @DynamicUpdate
+@ToString
 public class ContentStudied extends BaseEntity implements Persistable<ContentStudiedId> {
 
     @EmbeddedId
@@ -39,6 +40,7 @@ public class ContentStudied extends BaseEntity implements Persistable<ContentStu
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId("contentId")
     @JoinColumn(name = "content_id")
+    @ToString.Exclude
     private Content content;
 
     @Override

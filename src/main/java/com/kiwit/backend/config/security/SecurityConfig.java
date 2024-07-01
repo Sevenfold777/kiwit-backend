@@ -3,9 +3,7 @@ package com.kiwit.backend.config.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -32,14 +30,14 @@ public class SecurityConfig {
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 
-        http.authorizeHttpRequests(authz -> authz
+        http.authorizeHttpRequests(req -> req
                 .requestMatchers("/api/v1/healthCheck").permitAll()
                 .requestMatchers("/api/v1/user/refresh",
                         "/api/v1/user/sign-up",
                         "/api/v1/user/sign-in").permitAll()
+                .requestMatchers("/error").permitAll()
                 .requestMatchers("/h2-console/**", "/favicon.ico",
-                        "/error", "/swagger-ui/**",
-                        "/swagger-resources/**", "/v3/api-docs/**").permitAll()
+                        "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated());
 
 

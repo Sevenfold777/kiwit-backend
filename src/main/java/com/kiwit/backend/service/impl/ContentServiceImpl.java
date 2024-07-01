@@ -53,7 +53,6 @@ public class ContentServiceImpl implements ContentService {
         List<ContentDTO> contentDTOList = new ArrayList<>();
 
         for (Content c: contentList) {
-            // best practice? domain --> dto ...
             ContentDTO dto = ContentDTO.builder()
                     .id(c.getId())
                     .title(c.getTitle())
@@ -70,24 +69,30 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public ContentWithPayloadDTO getContentPayload(Long contentId) {
+    public ContentWithStudiedDTO getContentPayload(User user, Long contentId) {
 
-        Content content = contentDAO.selectContentWithPayload(contentId);
+        // lazy loading이 복합키 사용 환경에서 그다지 효율적이 못함
+        // (content_id로만 쿼리 --> 속도 느리고 index도 못타)
+        // => content, contentStudied2개 쿼리 나눠서 보내기
+        Content content = contentDAO.selectContent(contentId);
+        ContentStudied contentStudied = contentStudiedDAO.selectContentStudied(user.getId(), contentId);
+        ContentStudiedDTO contentStudiedDTO = null;
 
-        List <ContentPayloadDTO> contentPayloadDTOList = new ArrayList<>();
-        for (ContentPayload c : content.getPayloadList()) {
-            ContentPayloadDTO dto
-                    = ContentPayloadDTO
-                    .builder()
-                    .contentId(c.getId().getContentId())
-                    .number(c.getId().getNumber())
-                    .type(c.getType())
-                    .payload(c.getPayload())
+        if (contentStudied != null) {
+
+            assert contentStudied.getId() != null;
+
+            contentStudiedDTO = ContentStudiedDTO.builder()
+                    .userId(contentStudied.getId().getUserId())
+                    .contentId(contentStudied.getId().getContentId())
+                    .myAnswer(contentStudied.getMyAnswer())
+                    .kept(contentStudied.getKept())
+                    .createdAt(contentStudied.getCreatedAt())
+                    .updatedAt(contentStudied.getUpdatedAt())
                     .build();
-            contentPayloadDTOList.add(dto);
         }
 
-        ContentWithPayloadDTO contentDTO = ContentWithPayloadDTO.builder()
+        return ContentWithStudiedDTO.builder()
                 .id(content.getId())
                 .title(content.getTitle())
                 .point(content.getPoint())
@@ -95,10 +100,9 @@ public class ContentServiceImpl implements ContentService {
                 .answer(content.getAnswer())
                 .levelNum(content.getLevelNum())
                 .categoryChapterId(content.getCategoryChapterId())
-                .payloadList(contentPayloadDTOList)
+                .payloadUrl(content.getPayloadUrl())
+                .contentStudied(contentStudiedDTO)
                 .build();
-
-        return contentDTO;
     }
 
     @Transactional

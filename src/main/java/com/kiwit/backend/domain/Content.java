@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id", callSuper = false)
+@ToString
 public class Content extends BaseEntity {
 
     @Id
@@ -22,6 +23,9 @@ public class Content extends BaseEntity {
 //    max length 설정하기
     @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false, name = "payload_url")
+    private String payloadUrl;
 
     @Column(nullable = false)
     private Integer orderCat;
@@ -41,17 +45,15 @@ public class Content extends BaseEntity {
     private Level level;
 
     @OneToMany(mappedBy = "content")
-    private List<ContentPayload> payloadList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "content")
     private List<ContentStudied> contentStudiedList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_chapter_id")
     private CategoryChapter categoryChapter;
 
-    public Content(String title, int orderCat, int point, String exercise, boolean answer, Level level, CategoryChapter categoryChapter) {
+    public Content(String title, String payloadUrl, int orderCat, int point, String exercise, boolean answer, Level level, CategoryChapter categoryChapter) {
         this.title = title;
+        this.payloadUrl = payloadUrl;
         this.orderCat = orderCat;
         this.point = point;
         this.exercise = exercise;

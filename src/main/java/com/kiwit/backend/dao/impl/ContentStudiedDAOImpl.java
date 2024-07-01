@@ -58,6 +58,12 @@ public class ContentStudiedDAOImpl implements ContentStudiedDAO {
     @Override
     public List<ContentStudied> selectContentListStudied(Long userId, Integer next, Integer limit) {
         Pageable pageable = PageRequest.of(next, limit);
-        return contentStudiedRepository.findContentStudied(userId, pageable);
+        return contentStudiedRepository.findContentStudiedList(userId, pageable);
+    }
+
+    @Override
+    public ContentStudied selectContentStudied(Long userId, Long contentId) {
+        return contentStudiedRepository.findById(new ContentStudiedId(userId, contentId))
+                .orElse(null);
     }
 }

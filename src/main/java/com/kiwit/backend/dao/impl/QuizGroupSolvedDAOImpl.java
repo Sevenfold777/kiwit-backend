@@ -12,8 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class QuizGroupSolvedDAOImpl implements QuizGroupSolvedDAO {
@@ -38,13 +37,33 @@ public class QuizGroupSolvedDAOImpl implements QuizGroupSolvedDAO {
 
     @Override
     public List<QuizGroupSolved> selectGroupSolved(Long userId, Integer next, Integer limit) {
-        Pageable pageable = PageRequest.of(next, limit);
-        return quizGroupSolvedRepository.findGroupSolved(userId, pageable);
+        // temporary application level pagination
+
+//        Pageable pageable = PageRequest.of(next, limit);
+        List<QuizGroupSolved> quizGroupSolvedList = quizGroupSolvedRepository.findGroupSolved(userId);
+
+        Set<Long> quizGroupIdList = new HashSet<>();
+        List<QuizGroupSolved> trimmedQuizGroupSolvedList = new ArrayList<>();
+
+        for (QuizGroupSolved groupSolved : quizGroupSolvedList) {
+
+            if (!quizGroupIdList.contains(groupSolved.getQuizGroup().getId())) {
+                trimmedQuizGroupSolvedList.add(groupSolved);
+                quizGroupIdList.add(groupSolved.getQuizGroup().getId());
+            }
+        }
+
+        int fromIndex = next * limit;
+        int toIndex = Math.min((next + 1) * limit, trimmedQuizGroupSolvedList.size());
+
+        return trimmedQuizGroupSolvedList.subList(fromIndex, toIndex);
+
+//        return quizGroupSolvedRepository.findGroupSolved(userId, pageable);
     }
 
     @Override
     public QuizGroupSolved selectGroupSolvedWithGroup(Long userId, Long groupId) {
         return quizGroupSolvedRepository.findGroupByUserAndGroup(userId, groupId)
-                .orElseThrow(() -> new DataAccessException("Cannot find QuizGroupSolved with userId and groupId.") {});
+                .orElse(null); // 아직 풀지 않은 퀴즈 그룹
     }
 }

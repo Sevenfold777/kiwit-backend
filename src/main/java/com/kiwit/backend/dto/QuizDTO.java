@@ -21,4 +21,5 @@ public class QuizDTO {
     private String explanation;
     private Integer score;
     private List<QuizChoiceDTO> choiceList;
+    private Boolean kept;
 }

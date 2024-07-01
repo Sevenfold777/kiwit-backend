@@ -4,8 +4,7 @@ import com.kiwit.backend.common.constant.QuizType;
 import com.kiwit.backend.common.exception.CustomException;
 import com.kiwit.backend.config.security.JwtTokenProvider;
 import com.kiwit.backend.domain.*;
-import com.kiwit.backend.domain.compositeKey.QuizGroupSolvedId;
-import com.kiwit.backend.domain.compositeKey.QuizSolvedId;
+import com.kiwit.backend.domain.compositeKey.QuizKeptId;
 import com.kiwit.backend.dto.*;
 import com.kiwit.backend.service.QuizService;
 import com.kiwit.backend.service.UserService;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.Rollback;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,12 +76,15 @@ class QuizServiceImplTest {
     public void getQuizGroupTest() {
 
         // Given
+        initUser();
+        User user = new User(userId);
+
         initQuiz();
         QuizGroup quizGroup = quizGroups.get(0);
         List<Quiz> quizList = quizGroup.getQuizList();
 
         // When
-        QuizGroupWithQuizDTO quizGroupWithQuizDTO = this.quizService.solveQuizGroup(quizGroup.getId());
+        QuizGroupWithQuizDTO quizGroupWithQuizDTO = this.quizService.solveQuizGroup(user, quizGroup.getId());
         List<QuizDTO> quizDTOList = quizGroupWithQuizDTO.getQuizList();
 
         // Then
@@ -204,168 +207,6 @@ class QuizServiceImplTest {
     }
 
     @Test
-    @DisplayName("문제지 답안 제출(재시)")
-    public void resubmitAnswersTest() {
-
-        // Given
-        initUser();
-        initQuiz();
-        QuizGroup quizGroup = quizGroups.get(0);
-        QuizAnswerListDTO quizAnswerListDTO1 = createAnswerReq(quizGroup.getQuizList());
-
-        QuizGroupSolvedDTO quizGroupSolvedDTO = this.quizService.submitAnswers(
-                new User(userId), quizGroup.getId(), quizAnswerListDTO1);
-        em.flush();
-        em.clear();
-
-        QuizAnswerListDTO quizAnswerListDTO2
-                = createAnswerReq(quizGroup.getQuizList(), "1", "true", "DFS");
-
-        List<Long> quizIdList = quizAnswerListDTO2.getAnswerList()
-                .stream().map(QuizAnswerDTO::getQuizId).collect(toList());
-
-        // When
-        QuizGroupSolvedDTO groupResubmittedDTO
-                = this.quizService.resubmitAnswers(new User(userId), quizGroup.getId(), quizAnswerListDTO2);
-
-        // Then
-
-        // 1. Check if answer successfully modified
-        String queryStr = "select qs from QuizSolved qs" +
-                " where qs.quiz.id in :quizIdList" +
-                " order by qs.id.quizId asc";
-        List<QuizSolved> modifiedQuizSolvedList = em.createQuery(queryStr, QuizSolved.class)
-                .setParameter("quizIdList", quizIdList)
-                .getResultList();
-        // => JPQL 이므로 무조건 select query가 DB에 전송
-
-        assertThat(modifiedQuizSolvedList.stream().map(qs -> qs.getMyAnswer()).collect(toList()))
-                .isEqualTo(Arrays.asList("1", "true", "DFS"));
-
-
-        // 2. Check if score correctly calculated
-        QuizGroupSolved modifiedQuizGroupSolved
-                = em.find(QuizGroupSolved.class, new QuizGroupSolvedId(userId, quizGroup.getId()));
-        // => 1차 캐시에서 찾아 옴, select query 발생 X
-
-        assertThat(modifiedQuizGroupSolved.getLatestScore())
-                .isEqualTo(40);
-    }
-
-    @Test
-    @DisplayName("재시: 아직 안 푼 문제 수정 시 에러")
-    public void resubmitAnswerToNotSubmittedFailTest() {
-
-        // Given
-        initUser();
-        initQuiz();
-        QuizGroup quizGroup = quizGroups.get(0);
-        QuizAnswerListDTO answerListDTO = createAnswerReq(quizGroup.getQuizList());
-
-        // when
-        assertThrows(DataAccessException.class,
-                () -> this.quizService.resubmitAnswers(new User(userId), quizGroup.getId(), answerListDTO));
-    }
-
-    @Test
-    @DisplayName("재시: groupId와 quiz.groupId 매치되지 않을 경우 에러")
-    public void resubmitAnswerNotCorrespondingGroupIdFailTest() {
-
-        // Given
-        initUser();
-        initQuiz();
-
-        QuizGroup quizGroup1 = quizGroups.get(0);
-        QuizGroup quizGroup2 = quizGroups.get(1);
-        QuizAnswerListDTO answerListDTO1 = createAnswerReq(quizGroup1.getQuizList());
-        QuizAnswerListDTO answerListDTO2 = createAnswerReq(quizGroup2.getQuizList());
-
-        QuizGroupSolvedDTO quizGroupSolvedDTO1
-                = this.quizService.submitAnswers(new User(userId), quizGroup1.getId(), answerListDTO1);
-
-        // When
-        CustomException e = assertThrows(CustomException.class,
-                () -> this.quizService.resubmitAnswers(new User(userId), quizGroup1.getId(), answerListDTO2));
-
-        assertThat(e.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    }
-
-    @Test
-    @DisplayName("재시: ReqDTO와 quizGroup.quizList의 size가 다를 경우 에러")
-    public void resubmitAnswerWithInvalidReqBodyFailTest() {
-
-        // Given
-        initUser();
-        initQuiz();
-
-        QuizGroup quizGroup1 = quizGroups.get(0);
-        QuizAnswerListDTO answerListDTO = createAnswerReq(quizGroup1.getQuizList());
-
-        QuizGroupSolvedDTO quizGroupSolvedDTO =
-                this.quizService.submitAnswers(new User(userId), quizGroup1.getId(), answerListDTO);
-
-        answerListDTO.getAnswerList().add(new QuizAnswerDTO(1L, "fail answer"));
-
-        // When
-        CustomException e = assertThrows(CustomException.class,
-                () -> this.quizService.resubmitAnswers(new User(userId), quizGroup1.getId(), answerListDTO));
-
-        assertThat(e.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    }
-
-    @Test
-    @DisplayName("재시: randomly-sorted answerList")
-    public void resubmitAnswerWithUnsortedReqBodyTest() {
-        // !!! When 바로 위 answerList reverse 제외 resubmitAnswersTest 와 동일
-
-        // Given
-        initUser();
-        initQuiz();
-        QuizGroup quizGroup = quizGroups.get(0);
-        QuizAnswerListDTO quizAnswerListDTO1 = createAnswerReq(quizGroup.getQuizList());
-
-        QuizGroupSolvedDTO quizGroupSolvedDTO = this.quizService.submitAnswers(
-                new User(userId), quizGroup.getId(), quizAnswerListDTO1);
-        em.flush();
-        em.clear();
-
-        QuizAnswerListDTO quizAnswerListDTO2
-                = createAnswerReq(quizGroup.getQuizList(), "1", "true", "DFS");
-
-        List<Long> quizIdList = quizAnswerListDTO2.getAnswerList()
-                .stream().map(QuizAnswerDTO::getQuizId).collect(toList());
-
-        Collections.reverse(quizAnswerListDTO2.getAnswerList()); // reverse answerList Req(input)
-
-        // When
-        QuizGroupSolvedDTO groupResubmittedDTO
-                = this.quizService.resubmitAnswers(new User(userId), quizGroup.getId(), quizAnswerListDTO2);
-
-        // Then
-
-        // 1. Check if answer successfully modified
-        String queryStr = "select qs from QuizSolved qs" +
-                " where qs.quiz.id in :quizIdList" +
-                " order by qs.id.quizId asc";
-        List<QuizSolved> modifiedQuizSolvedList = em.createQuery(queryStr, QuizSolved.class)
-                .setParameter("quizIdList", quizIdList)
-                .getResultList();
-        // => JPQL 이므로 무조건 select query가 DB에 전송
-
-        assertThat(modifiedQuizSolvedList.stream().map(qs -> qs.getMyAnswer()).collect(toList()))
-                .isEqualTo(Arrays.asList("1", "true", "DFS"));
-
-
-        // 2. Check if score correctly calculated
-        QuizGroupSolved modifiedQuizGroupSolved
-                = em.find(QuizGroupSolved.class, new QuizGroupSolvedId(userId, quizGroup.getId()));
-        // => 1차 캐시에서 찾아 옴, select query 발생 X
-
-        assertThat(modifiedQuizGroupSolved.getLatestScore())
-                .isEqualTo(40);
-    }
-
-    @Test
     @DisplayName("최근 푼 문제지 조회 성공")
     public void getQuizGroupLatestSolvedSuccessTest() {
 
@@ -393,7 +234,7 @@ class QuizServiceImplTest {
         List<QuizSolved> savedQuizSolvedIdList = em.createQuery(queryStr, QuizSolved.class)
                 .setParameter("quizIdList", quizIdList)
                 .getResultList();
-        assertThat(savedQuizSolvedIdList.stream().map(qs -> qs.getId().getQuizId()).collect(toList()))
+        assertThat(savedQuizSolvedIdList.stream().map(QuizSolved::getId).collect(toList()))
                 .isEqualTo(quizGroup.getQuizList().stream().map(Quiz::getId).collect(toList()));
     }
 
@@ -457,14 +298,14 @@ class QuizServiceImplTest {
         Long tgtQuizId = quizAnswerListDTO.getAnswerList().get(0).getQuizId();
 
         // When
-        QuizSolvedDTO quizKeptDTO = this.quizService.keepQuiz(
+        QuizKeptDTO quizKeptDTO = this.quizService.keepQuiz(
                 new User(userId), tgtQuizId);
 
         // Then
-        QuizSolved quizSolved = em.find(QuizSolved.class, new QuizSolvedId(userId, tgtQuizId));
+        QuizKept quizKept = em.find(QuizKept.class, new QuizKeptId(userId, tgtQuizId));
 
-        assertThat(quizKeptDTO.getQuizId()).isEqualTo(quizSolved.getId().getQuizId());
-        assertThat(quizSolved.getKept()).isEqualTo(true);
+        assertThat(quizKeptDTO.getQuizId()).isEqualTo(quizKept.getId().getQuizId());
+        assertThat(quizKeptDTO.getUserId()).isEqualTo(quizKept.getId().getUserId());
     }
 
     @Test
@@ -497,7 +338,7 @@ class QuizServiceImplTest {
         Long tgtQuizId = quizAnswerListDTO.getAnswerList().get(0).getQuizId();
 
         // When
-        QuizSolvedDTO quizKeptDTO = this.quizService.keepQuiz(
+        QuizKeptDTO quizKeptDTO = this.quizService.keepQuiz(
                 new User(userId), tgtQuizId);
 
         // Then
@@ -520,6 +361,20 @@ class QuizServiceImplTest {
         // Then
         assertThat(quizKeptDTOList.size()).isEqualTo(0);
     }
+
+//    @Test
+//    @Rollback(value = false)
+//    public void test() {
+//
+//        initUser();
+//
+//        levels = serviceTestHelper.createLevels(); // init Level
+//        categories = serviceTestHelper.createCategories(); // init Category
+//        categoryChapters = serviceTestHelper.createCategoryChapters(categories); // init Chapter
+//        quizGroups = serviceTestHelper.createQuizGroup(levels, categoryChapters); // init QuizGroup
+//        quizzes = serviceTestHelper.createQuiz(quizGroups); // init Quiz (+ Choice if necessary)
+//        serviceTestHelper.createContentWithPayload(categoryChapters, levels); // init Contents & Payload
+//    }
 
 
     private void initUser() {

@@ -1,8 +1,8 @@
 package com.kiwit.backend.domain.compositeKey;
 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.Id;
 import lombok.*;
 
 import java.io.Serializable;
@@ -12,7 +12,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class QuizSolvedId implements Serializable {
+public class QuizKeptId implements Serializable {
 
     @Column(name = "user_id")
     private Long userId;

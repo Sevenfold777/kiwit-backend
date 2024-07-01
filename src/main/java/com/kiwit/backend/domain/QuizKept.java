@@ -1,42 +1,36 @@
 package com.kiwit.backend.domain;
 
+import com.kiwit.backend.domain.compositeKey.QuizKeptId;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.domain.Persistable;
 
 @Entity
-@Table(name = "quiz_solved")
+@Table(name = "quiz_kept")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(of = "id", callSuper = false)
-//@DynamicInsert // 사용시 batch insert 적용되지 않음
-@DynamicUpdate
-public class QuizSolved extends BaseEntity implements Persistable<Long> {
+public class QuizKept extends BaseEntity implements Persistable<QuizKeptId> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
-    @ColumnDefault("false")
-    private Boolean correct;
-
-    @Column(nullable = false)
-    private String myAnswer;
+    @EmbeddedId
+    private QuizKeptId id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @MapsId("userId")
     @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @MapsId("quizId")
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "quiz_solved_id", referencedColumnName = "id")
+    private QuizSolved quizSolved;
 
     @Override
     public boolean isNew() {

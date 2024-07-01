@@ -22,4 +22,9 @@ public class QuizDAOImpl implements QuizDAO {
     public List<Quiz> findQuizWithChoiceByGroupId(Long groupId) {
         return quizRepository.findQuizWithChoiceByGroupId(groupId);
     }
+
+    @Override
+    public Quiz getQuizProxy(Long quizId) {
+        return quizRepository.getReferenceById(quizId);
+    }
 }

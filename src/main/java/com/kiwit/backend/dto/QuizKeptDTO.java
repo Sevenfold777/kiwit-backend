@@ -5,10 +5,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class QuizSolvedDTO {
+public class QuizKeptDTO {
 
     private Long userId;
     private Long quizId;
-    private Boolean correct;
-    private String myAnswer;
+    private QuizSolvedDTO quizSolved;
 }

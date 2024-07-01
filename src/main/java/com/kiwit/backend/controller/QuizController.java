@@ -34,8 +34,9 @@ public class QuizController {
 
     @GetMapping("/group/{groupId}")
     public ResponseEntity<QuizGroupWithQuizDTO>
-    solveQuizGroup(@PathVariable Long groupId) {
-        QuizGroupWithQuizDTO resDto = quizService.solveQuizGroup(groupId);
+    solveQuizGroup(@AuthenticationPrincipal User authUser,
+                   @PathVariable Long groupId) {
+        QuizGroupWithQuizDTO resDto = quizService.solveQuizGroup(authUser, groupId);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
@@ -45,15 +46,6 @@ public class QuizController {
                   @PathVariable Long groupId,
                   @Valid @RequestBody QuizAnswerListDTO quizAnswerListDTO) {
         QuizGroupSolvedDTO resDto = quizService.submitAnswers(authUser, groupId, quizAnswerListDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(resDto);
-    }
-
-    @PatchMapping("/group/{groupId}")
-    public ResponseEntity<QuizGroupSolvedDTO>
-    resubmitAnswers(@AuthenticationPrincipal User authUser,
-                    @PathVariable Long groupId,
-                    @Valid @RequestBody QuizAnswerListDTO quizAnswerListDTO) {
-        QuizGroupSolvedDTO resDto = quizService.resubmitAnswers(authUser, groupId, quizAnswerListDTO);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
@@ -82,11 +74,11 @@ public class QuizController {
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
-    @PatchMapping("/{quizId}/kept")
-    public ResponseEntity<QuizSolvedDTO>
+    @PostMapping("/{quizId}/kept")
+    public ResponseEntity<QuizKeptDTO>
     keepContent(@AuthenticationPrincipal User authUser,
                 @PathVariable Long quizId) {
-        QuizSolvedDTO resDto = quizService.keepQuiz(authUser, quizId);
+        QuizKeptDTO resDto = quizService.keepQuiz(authUser, quizId);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 

@@ -7,4 +7,6 @@ import java.util.List;
 public interface QuizDAO {
 
     List<Quiz> findQuizWithChoiceByGroupId(Long groupId);
+
+    Quiz getQuizProxy(Long quizId);
 }

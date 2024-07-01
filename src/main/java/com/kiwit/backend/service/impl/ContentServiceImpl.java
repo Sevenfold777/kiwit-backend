@@ -60,6 +60,7 @@ public class ContentServiceImpl implements ContentService {
                     .exercise(c.getExercise())
                     .answer(c.getAnswer())
                     .categoryChapterId(c.getCategoryChapterId())
+                    .payloadUrl(c.getPayloadUrl())
                     .levelNum(c.getLevelNum())
                     .build();
             contentDTOList.add(dto);
@@ -191,6 +192,7 @@ public class ContentServiceImpl implements ContentService {
                         .point(c.getPoint())
                         .exercise(c.getExercise())
                         .answer(c.getAnswer())
+                        .payloadUrl(c.getPayloadUrl())
                         .levelNum(c.getLevelNum())
                         .categoryChapterId(c.getCategoryChapterId())
                         .build();
@@ -226,6 +228,7 @@ public class ContentServiceImpl implements ContentService {
                 .exercise(content.getExercise())
                 .answer(content.getAnswer())
                 .levelNum(content.getLevelNum())
+                .payloadUrl(content.getPayloadUrl())
                 .categoryChapterId(content.getCategoryChapterId())
                 .build();
 
@@ -263,6 +266,7 @@ public class ContentServiceImpl implements ContentService {
                     .point(c.getPoint())
                     .exercise(c.getExercise())
                     .answer(c.getAnswer())
+                    .payloadUrl(c.getPayloadUrl())
                     .levelNum(c.getLevelNum())
                     .categoryChapterId(c.getCategoryChapterId())
                     .contentStudied(contentStudiedDTO)
@@ -305,6 +309,7 @@ public class ContentServiceImpl implements ContentService {
                     .point(c.getPoint())
                     .exercise(c.getExercise())
                     .answer(c.getAnswer())
+                    .payloadUrl(c.getPayloadUrl())
                     .levelNum(c.getLevelNum())
                     .categoryChapterId(c.getCategoryChapterId())
                     .contentStudied(contentStudiedDTO)
